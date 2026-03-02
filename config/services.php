@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'hablame' => [
+        'api_key' => env('HABLAME_API_KEY'),
+        'sender' => env('HABLAME_SENDER'),
+    ],
+
 ];
