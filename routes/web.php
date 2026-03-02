@@ -15,6 +15,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\CreditApplicationController;
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
@@ -23,6 +24,11 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+Route::get('/solicitud-credito', [CreditApplicationController::class, 'create'])->name('credit-applications.create');
+Route::post('/solicitud-credito', [CreditApplicationController::class, 'store'])->name('credit-applications.store');
+Route::get('/solicitud-credito/{creditApplication}/pdf', [CreditApplicationController::class, 'downloadPdf'])->name('credit-applications.pdf');
+
 Route::middleware('auth')->group(function () {  
   Route::get('/dashboard', [DashboardController::class, 'index'])->name('index');
 
