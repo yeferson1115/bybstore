@@ -26,14 +26,7 @@
                         </a>
                       </li>                     
                       @endcan
-                      @can('Ver Usuarios')                                        
-                      <li class="menu-item">
-                        <a href="/customers" class="menu-link">
-                          <i class="menu-icon fa-solid fa-users"></i>
-                          <div data-i18n="Clientes">Clientes</div>
-                        </a>
-                      </li>                     
-                      @endcan
+                     
                       
                       @can('Editar Permisos')
                       <li class="menu-item">
@@ -70,75 +63,18 @@
                     </a>
 
                     <ul class="menu-sub">
-                      @can('Ver Categorias')
-                      <li class="menu-item">
-                        <a href="/categories" class="menu-link">
-                          <i class="menu-icon fa-solid fa-layer-group"></i>
-                          <div data-i18n="Categorias">Categorias</div>
-                        </a>
-                      </li>
-                      @endcan
-                      @can('Ver Productos')
-                      <li class="menu-item">
-                        <a href="/products" class="menu-link">
-                          <i class="menu-icon fa-solid fa-bag-shopping"></i>
-                          <div data-i18n="Productos">Productos</div>
-                        </a>
-                      </li>
-                      @endcan
+                      
                       <li class="menu-item">
                         <a href="/companies" class="menu-link">
                           <i class="menu-icon fa-solid fa-building"></i>
                           <div data-i18n="Empresas">Empresas</div>
                         </a>
                       </li> 
-                      @can('Ver Mesas')
-                      <li class="menu-item">
-                        <a href="/tables" class="menu-link">
-                          <i class="menu-icon fa-solid fa-toilet-portable"></i>
-                          <div data-i18n="Mesas">Mesas</div>
-                        </a>
-                      </li> 
-                      @endcan                     
+                                     
                     </ul>
                   </li>
                   @endcan
-                  @can('Gestionar Ordenes')
-                  <li class="menu-item">
-                    <a href="javascript:void(0)" class="menu-link menu-toggle">
-                      <i class="menu-icon fa-solid fa-bag-shopping"></i>
-                      <div data-i18n="Ordenes">Ordenes</div>
-                    </a>
-
-                    <ul class="menu-sub">
-                      @can('Crear Ordenes')
-                      <li class="menu-item">
-                        <a href="/orders" class="menu-link">
-                          <i class="menu-icon fa-solid fa-cart-plus"></i>
-                          <div data-i18n="Crear Orden">Crear Orden</div>
-                        </a>                   
-                      </li>
-                      @endcan
-                      @can('Ver Ordenes')
-                      <li class="menu-item">
-                        <a href="/reports/orders" class="menu-link">
-                          <i class="menu-icon fa-solid fa-cart-shopping"></i>
-                          <div data-i18n="Ordenes">Ordenes</div>
-                        </a>
-                      </li>
-                      @endcan
-                                           
-                    </ul>
-                  </li>
-                  @endcan
-                  @can('Reportes')
-                  <li class="menu-item">
-                    <a href="/reports/sales" class="menu-link">
-                      <i class="menu-icon fa-solid fa-chart-line"></i>
-                      <div data-i18n="Reporte Ventas">Reporte Ventas</div>
-                    </a>                   
-                  </li>
-                  @endcan
+                 
                   
                   
                 </ul>
