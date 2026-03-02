@@ -23,6 +23,8 @@ Route::get('/consultar-pagar-credito', [PublicCreditPortalController::class, 'in
 Route::post('/consultar-pagar-credito/pagar', [PublicCreditPortalController::class, 'startPayment'])->name('credit-portal.pay');
 Route::get('/consultar-pagar-credito/checkout/{payment}', [PublicCreditPortalController::class, 'checkout'])->name('credit-portal.checkout');
 Route::get('/consultar-pagar-credito/finalizar', [PublicCreditPortalController::class, 'finishPayment'])->name('credit-portal.finish');
+Route::post('/consultar-pagar-credito/pagos/{payment}/actualizar', [PublicCreditPortalController::class, 'refreshPayment'])->name('credit-portal.refresh');
+Route::post('/webhooks/wompi', [PublicCreditPortalController::class, 'wompiWebhook'])->name('credit-portal.wompi-webhook');
 
 Route::get('/solicitud-credito', [CreditApplicationController::class, 'create'])->name('credit-applications.create');
 Route::post('/solicitud-credito', [CreditApplicationController::class, 'store'])->name('credit-applications.store');
