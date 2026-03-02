@@ -27,6 +27,8 @@
                     </div>
                 @endif
 
+                <div id="autosave-status" class="small text-muted mb-3"></div>
+
                 <div class="card border mb-4">
                     <div class="card-body">
                         <h5 class="mb-3">¿Ya habías iniciado una solicitud?</h5>
@@ -79,8 +81,8 @@
                             <input class="form-control" name="verification_code" maxlength="6" placeholder="123456">
                         </div>
                         <div class="col-md-6 d-flex align-items-end gap-2">
-                            <button class="btn btn-outline-primary" type="submit" formaction="{{ route('credit-applications.send-phone-code') }}" formmethod="POST">Enviar código SMS</button>
-                            <button class="btn btn-success" type="submit" formaction="{{ route('credit-applications.verify-phone-code') }}" formmethod="POST">Validar celular</button>
+                            <button class="btn btn-outline-primary" type="submit" formaction="{{ route('credit-applications.send-phone-code') }}" formmethod="POST" name="action" value="send_code">Enviar código SMS</button>
+                            <button class="btn btn-success" type="submit" formaction="{{ route('credit-applications.verify-phone-code') }}" formmethod="POST" name="action" value="verify_code">Validar celular</button>
                         </div>
                     </div>
 
@@ -168,8 +170,10 @@
             const hiddenInput = document.getElementById('signature_data');
             const clearBtn = document.getElementById('clear-signature');
             const form = document.getElementById('credit-form');
+            const autosaveStatus = document.getElementById('autosave-status');
             const ctx = canvas.getContext('2d');
             let drawing = false;
+            let autosaveTimer;
 
             ctx.lineWidth = 2;
             ctx.lineCap = 'round';
@@ -214,6 +218,48 @@
             clearBtn.addEventListener('click', () => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 hiddenInput.value = '';
+            });
+
+            const autosave = async () => {
+                const formData = new FormData(form);
+                formData.set('action', 'draft');
+                formData.delete('verification_code');
+                formData.delete('id_front');
+                formData.delete('id_back');
+                formData.delete('selfie_with_id');
+
+                autosaveStatus.textContent = 'Guardando borrador...';
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'text/html',
+                        },
+                    });
+
+                    autosaveStatus.textContent = response.ok
+                        ? 'Borrador guardado automáticamente.'
+                        : 'No se pudo guardar el borrador automático.';
+                } catch (error) {
+                    autosaveStatus.textContent = 'No se pudo guardar el borrador automático.';
+                }
+            };
+
+            const scheduleAutosave = () => {
+                clearTimeout(autosaveTimer);
+                autosaveTimer = setTimeout(autosave, 1200);
+            };
+
+            form.querySelectorAll('input, select, textarea').forEach((field) => {
+                if (field.type === 'file' || field.name === 'verification_code') {
+                    return;
+                }
+
+                field.addEventListener('input', scheduleAutosave);
+                field.addEventListener('change', scheduleAutosave);
             });
 
             form.addEventListener('submit', () => {
