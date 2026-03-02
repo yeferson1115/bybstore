@@ -65,6 +65,25 @@
                         <div class="col-md-6"><label class="form-label">Ciudad</label><input class="form-control" name="city" value="{{ old('city', $application?->city) }}"></div>
                     </div>
 
+                    <div class="alert {{ $application?->phone_verified_at ? 'alert-success' : 'alert-warning' }} mt-3 mb-0">
+                        @if ($application?->phone_verified_at)
+                            ✅ Celular validado: {{ $application->phone_primary }}.
+                        @else
+                            ⚠️ Antes de enviar la solicitud debes validar el celular principal por SMS.
+                        @endif
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label">Código de verificación</label>
+                            <input class="form-control" name="verification_code" maxlength="6" placeholder="123456">
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end gap-2">
+                            <button class="btn btn-outline-primary" type="submit" formaction="{{ route('credit-applications.send-phone-code') }}" formmethod="POST">Enviar código SMS</button>
+                            <button class="btn btn-success" type="submit" formaction="{{ route('credit-applications.verify-phone-code') }}" formmethod="POST">Validar celular</button>
+                        </div>
+                    </div>
+
                     <hr>
                     <h5>Datos laborales y crédito</h5>
                     <div class="row g-3">
