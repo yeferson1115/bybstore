@@ -7,6 +7,8 @@ use App\Models\CreditApplication;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -14,6 +16,8 @@ use Illuminate\View\View;
 
 class CreditApplicationController extends Controller
 {
+    private const PHONE_VERIFICATION_CODE_TTL_MINUTES = 10;
+
     public function create(Request $request): View
     {
         $application = null;
@@ -55,7 +59,7 @@ class CreditApplicationController extends Controller
         ])->with('status', 'Borrador recuperado correctamente. Puedes continuar tu solicitud.');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $action = $request->input('action', 'draft');
         $isSubmit = $action === 'submit';
@@ -115,6 +119,7 @@ class CreditApplicationController extends Controller
         }
 
         $data = $request->validate($rules);
+        $data = $this->syncAuthorizationFields($data);
 
         $application = CreditApplication::firstOrNew([
             'public_token' => $data['token'],
@@ -122,6 +127,13 @@ class CreditApplicationController extends Controller
 
         $application->fill($data);
         $application->status = $isSubmit ? 'submitted' : 'draft';
+
+        if (($data['phone_primary'] ?? null) && $application->phone_verified_number !== $this->normalizePhone($data['phone_primary'])) {
+            $application->phone_verified_at = null;
+            $application->phone_verified_number = null;
+            $application->phone_verification_code_hash = null;
+            $application->phone_verification_expires_at = null;
+        }
 
         $basePath = "credit-applications/{$data['token']}";
 
@@ -141,6 +153,12 @@ class CreditApplicationController extends Controller
         }
 
         if ($isSubmit) {
+            if (! $application->phone_verified_at || $application->phone_verified_number !== $this->normalizePhone((string) $application->phone_primary)) {
+                return back()->withErrors([
+                    'phone_verification' => 'Debes validar tu celular por código SMS antes de enviar la solicitud.',
+                ])->withInput();
+            }
+
             if (! $application->id_front_path || ! $application->id_back_path || ! $application->selfie_with_id_path) {
                 return back()->withErrors([
                     'documents' => 'Debes adjuntar cédula frente, cédula reverso y foto sosteniendo la cédula para enviar la solicitud.',
@@ -158,6 +176,10 @@ class CreditApplicationController extends Controller
 
         $application->save();
 
+        if ($request->ajax() && ! $isSubmit) {
+            return response()->noContent();
+        }
+
         if ($isSubmit) {
             $pdfPath = $this->generatePdf($application, $basePath);
             $application->pdf_path = $pdfPath;
@@ -173,6 +195,89 @@ class CreditApplicationController extends Controller
             ->route('credit-applications.create', ['token' => $application->public_token])
             ->with('status', 'Borrador guardado correctamente.')
             ->with('resume_url', route('credit-applications.create', ['token' => $application->public_token]));
+    }
+
+    public function sendPhoneCode(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'token' => ['required', 'string'],
+            'phone_primary' => ['required', 'string', 'max:30'],
+        ]);
+
+        $phone = $this->normalizePhone($data['phone_primary']);
+
+        if (! preg_match('/^57\d{10}$/', $phone)) {
+            return back()->withErrors([
+                'phone_primary' => 'Ingresa un celular válido de Colombia (10 dígitos, con o sin prefijo 57).',
+            ])->withInput();
+        }
+
+        $application = CreditApplication::firstOrNew([
+            'public_token' => $data['token'],
+        ]);
+
+        $this->saveDraftSnapshot($application, $request->all());
+
+        $code = (string) random_int(100000, 999999);
+        $message = "Tu código de verificación BYB Store es: {$code}. Vence en " . self::PHONE_VERIFICATION_CODE_TTL_MINUTES . ' minutos.';
+
+        $sent = $this->sendSms($phone, $message);
+
+        if (! $sent) {
+            return back()->withErrors([
+                'phone_verification' => 'No pudimos enviar el SMS en este momento. Intenta de nuevo.',
+            ])->withInput();
+        }
+
+        $application->phone_verification_code_hash = Hash::make($code);
+        $application->phone_verification_expires_at = now()->addMinutes(self::PHONE_VERIFICATION_CODE_TTL_MINUTES);
+        $application->phone_verified_at = null;
+        $application->phone_verified_number = null;
+        $application->save();
+
+        return redirect()->route('credit-applications.create', ['token' => $application->public_token])
+            ->with('status', 'Te enviamos un código por SMS. Ingrésalo para validar tu celular.');
+    }
+
+    public function verifyPhoneCode(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'token' => ['required', 'string'],
+            'phone_primary' => ['required', 'string', 'max:30'],
+            'verification_code' => ['required', 'digits:6'],
+        ]);
+
+        $application = CreditApplication::where('public_token', $data['token'])->first();
+
+        if (! $application || ! $application->phone_verification_code_hash) {
+            return back()->withErrors([
+                'phone_verification' => 'Primero debes solicitar el código SMS.',
+            ])->withInput();
+        }
+
+        $phone = $this->normalizePhone($data['phone_primary']);
+
+        if ($application->phone_verification_expires_at?->isPast()) {
+            return back()->withErrors([
+                'phone_verification' => 'El código expiró. Solicita uno nuevo.',
+            ])->withInput();
+        }
+
+        if (! Hash::check($data['verification_code'], $application->phone_verification_code_hash)) {
+            return back()->withErrors([
+                'verification_code' => 'El código ingresado no es válido.',
+            ])->withInput();
+        }
+
+        $this->saveDraftSnapshot($application, $request->all());
+        $application->phone_verified_number = $phone;
+        $application->phone_verified_at = now();
+        $application->phone_verification_code_hash = null;
+        $application->phone_verification_expires_at = null;
+        $application->save();
+
+        return redirect()->route('credit-applications.create', ['token' => $application->public_token])
+            ->with('status', 'Celular validado correctamente. Ya puedes enviar la solicitud.');
     }
 
     public function downloadPdf(CreditApplication $creditApplication)
@@ -211,5 +316,93 @@ class CreditApplicationController extends Controller
         Storage::disk('public')->put($path, $pdf->output());
 
         return $path;
+    }
+
+    private function normalizePhone(string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', $phone) ?? '';
+
+        if (str_starts_with($digits, '57') && strlen($digits) === 12) {
+            return $digits;
+        }
+
+        if (strlen($digits) === 10) {
+            return '57' . $digits;
+        }
+
+        return $digits;
+    }
+
+    private function sendSms(string $phone, string $message): bool
+    {
+        $apiKey = (string) config('services.hablame.api_key');
+        $sender = (string) config('services.hablame.sender');
+
+        if (! $apiKey || ! $sender) {
+            return false;
+        }
+
+        $response = Http::asJson()
+            ->withToken($apiKey)
+            ->post('https://api103.hablame.co/api/sms/v3/send/marketing', [
+                'toNumber' => $phone,
+                'sms' => $message,
+                'flash' => false,
+                'sc' => $sender,
+                'request_dlvr_rcpt' => 0,
+            ]);
+
+        return $response->successful();
+    }
+
+    private function saveDraftSnapshot(CreditApplication $application, array $payload): void
+    {
+        $allowedFields = [
+            'request_date', 'full_name', 'document_type', 'document_number', 'document_issue_date',
+            'phone_primary', 'phone_secondary', 'email', 'residential_address', 'neighborhood', 'city',
+            'company_id', 'work_site', 'hire_date', 'contract_type', 'monthly_income',
+            'requested_products', 'net_value_without_interest', 'installment_value',
+            'first_installment_date', 'installments_count', 'payment_frequency', 'observations',
+            'employer_name', 'discount_authorization_date', 'employer_nit', 'employee_name',
+            'employee_document', 'employee_position', 'discount_concept', 'discount_total_value',
+        ];
+
+        $data = collect($payload)
+            ->only($allowedFields)
+            ->all();
+
+        $data = $this->syncAuthorizationFields($data);
+
+        $application->fill($data);
+        $application->status = $application->status ?: 'draft';
+
+        if (($data['phone_primary'] ?? null) && $application->phone_verified_number !== $this->normalizePhone((string) $data['phone_primary'])) {
+            $application->phone_verified_at = null;
+            $application->phone_verified_number = null;
+            $application->phone_verification_code_hash = null;
+            $application->phone_verification_expires_at = null;
+        }
+    }
+
+    private function syncAuthorizationFields(array $data): array
+    {
+        if (! empty($data['company_id'])) {
+            $company = Company::find($data['company_id']);
+
+            if ($company) {
+                $data['employer_name'] = $company->name;
+                $data['employer_nit'] = $company->nit;
+            }
+        }
+
+        if (! empty($data['full_name'])) {
+            $data['employee_name'] = $data['full_name'];
+        }
+
+        if (! empty($data['document_number'])) {
+            $data['employee_document'] = $data['document_number'];
+        }
+
+        return $data;
     }
 }

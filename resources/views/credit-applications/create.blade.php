@@ -27,6 +27,8 @@
                     </div>
                 @endif
 
+                <div id="autosave-status" class="small text-muted mb-3"></div>
+
                 <div class="card border mb-4">
                     <div class="card-body">
                         <h5 class="mb-3">¿Ya habías iniciado una solicitud?</h5>
@@ -54,9 +56,9 @@
                     <h5>Datos personales</h5>
                     <div class="row g-3">
                         <div class="col-md-4"><label class="form-label">Fecha solicitud</label><input type="date" class="form-control" name="request_date" value="{{ old('request_date', optional($application?->request_date)->format('Y-m-d')) }}"></div>
-                        <div class="col-md-8"><label class="form-label">Nombres y apellidos</label><input class="form-control" name="full_name" value="{{ old('full_name', $application?->full_name) }}"></div>
+                        <div class="col-md-8"><label class="form-label">Nombres y apellidos</label><input class="form-control" id="full_name" name="full_name" value="{{ old('full_name', $application?->full_name) }}"></div>
                         <div class="col-md-3"><label class="form-label">Tipo documento</label><input class="form-control" name="document_type" value="{{ old('document_type', $application?->document_type) }}"></div>
-                        <div class="col-md-3"><label class="form-label">Número documento</label><input class="form-control" name="document_number" value="{{ old('document_number', $application?->document_number) }}"></div>
+                        <div class="col-md-3"><label class="form-label">Número documento</label><input class="form-control" id="document_number" name="document_number" value="{{ old('document_number', $application?->document_number) }}"></div>
                         <div class="col-md-3"><label class="form-label">Celular 1</label><input class="form-control" name="phone_primary" value="{{ old('phone_primary', $application?->phone_primary) }}"></div>
                         <div class="col-md-3"><label class="form-label">Celular 2</label><input class="form-control" name="phone_secondary" value="{{ old('phone_secondary', $application?->phone_secondary) }}"></div>
                         <div class="col-md-6"><label class="form-label">Correo</label><input type="email" class="form-control" name="email" value="{{ old('email', $application?->email) }}"></div>
@@ -65,14 +67,33 @@
                         <div class="col-md-6"><label class="form-label">Ciudad</label><input class="form-control" name="city" value="{{ old('city', $application?->city) }}"></div>
                     </div>
 
+                    <div class="alert {{ $application?->phone_verified_at ? 'alert-success' : 'alert-warning' }} mt-3 mb-0">
+                        @if ($application?->phone_verified_at)
+                            ✅ Celular validado: {{ $application->phone_primary }}.
+                        @else
+                            ⚠️ Antes de enviar la solicitud debes validar el celular principal por SMS.
+                        @endif
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label">Código de verificación</label>
+                            <input class="form-control" name="verification_code" maxlength="6" placeholder="123456">
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end gap-2">
+                            <button class="btn btn-outline-primary" type="submit" formaction="{{ route('credit-applications.send-phone-code') }}" formmethod="POST" name="action" value="send_code">Enviar código SMS</button>
+                            <button class="btn btn-success" type="submit" formaction="{{ route('credit-applications.verify-phone-code') }}" formmethod="POST" name="action" value="verify_code">Validar celular</button>
+                        </div>
+                    </div>
+
                     <hr>
                     <h5>Datos laborales y crédito</h5>
                     <div class="row g-3">
                         <div class="col-md-6"><label class="form-label">Empresa donde labora</label>
-                            <select class="form-control" name="company_id">
+                            <select class="form-control" id="company_id" name="company_id">
                                 <option value="">Selecciona una empresa</option>
                                 @foreach ($companies as $company)
-                                    <option value="{{ $company->id }}" @selected((string) old('company_id', $application?->company_id) === (string) $company->id)>
+                                    <option value="{{ $company->id }}" data-company-name="{{ $company->name }}" data-company-nit="{{ $company->nit }}" @selected((string) old('company_id', $application?->company_id) === (string) $company->id)>
                                         {{ $company->name }} - NIT {{ $company->nit }}
                                     </option>
                                 @endforeach
@@ -100,10 +121,10 @@
                     <hr>
                     <h5>Autorización de descuento</h5>
                     <div class="row g-3">
-                        <div class="col-md-6"><label class="form-label">Empleador</label><input class="form-control" name="employer_name" value="{{ old('employer_name', $application?->employer_name) }}"></div>
-                        <div class="col-md-6"><label class="form-label">NIT</label><input class="form-control" name="employer_nit" value="{{ old('employer_nit', $application?->employer_nit) }}"></div>
-                        <div class="col-md-4"><label class="form-label">Nombre empleado</label><input class="form-control" name="employee_name" value="{{ old('employee_name', $application?->employee_name) }}"></div>
-                        <div class="col-md-4"><label class="form-label">Documento</label><input class="form-control" name="employee_document" value="{{ old('employee_document', $application?->employee_document) }}"></div>
+                        <div class="col-md-6"><label class="form-label">Empleador</label><input class="form-control" id="employer_name" name="employer_name" value="{{ old('employer_name', $application?->employer_name) }}" readonly></div>
+                        <div class="col-md-6"><label class="form-label">NIT</label><input class="form-control" id="employer_nit" name="employer_nit" value="{{ old('employer_nit', $application?->employer_nit) }}" readonly></div>
+                        <div class="col-md-4"><label class="form-label">Nombre empleado</label><input class="form-control" id="employee_name" name="employee_name" value="{{ old('employee_name', $application?->employee_name) }}" readonly></div>
+                        <div class="col-md-4"><label class="form-label">Documento</label><input class="form-control" id="employee_document" name="employee_document" value="{{ old('employee_document', $application?->employee_document) }}" readonly></div>
                         <div class="col-md-4"><label class="form-label">Cargo</label><input class="form-control" name="employee_position" value="{{ old('employee_position', $application?->employee_position) }}"></div>
                         <div class="col-md-6"><label class="form-label">Descuento por</label><input class="form-control" name="discount_concept" value="{{ old('discount_concept', $application?->discount_concept) }}"></div>
                         <div class="col-md-3"><label class="form-label">Valor total</label><input type="number" step="0.01" class="form-control" name="discount_total_value" value="{{ old('discount_total_value', $application?->discount_total_value) }}"></div>
@@ -149,8 +170,39 @@
             const hiddenInput = document.getElementById('signature_data');
             const clearBtn = document.getElementById('clear-signature');
             const form = document.getElementById('credit-form');
+            const autosaveStatus = document.getElementById('autosave-status');
+            const fullNameInput = document.getElementById('full_name');
+            const documentNumberInput = document.getElementById('document_number');
+            const companySelect = document.getElementById('company_id');
+            const employerNameInput = document.getElementById('employer_name');
+            const employerNitInput = document.getElementById('employer_nit');
+            const employeeNameInput = document.getElementById('employee_name');
+            const employeeDocumentInput = document.getElementById('employee_document');
             const ctx = canvas.getContext('2d');
             let drawing = false;
+            let autosaveTimer;
+
+            const syncDiscountAuthorizationFields = () => {
+                const selectedOption = companySelect?.options?.[companySelect.selectedIndex];
+                const companyName = selectedOption?.dataset?.companyName || '';
+                const companyNit = selectedOption?.dataset?.companyNit || '';
+
+                if (employerNameInput) {
+                    employerNameInput.value = companyName;
+                }
+
+                if (employerNitInput) {
+                    employerNitInput.value = companyNit;
+                }
+
+                if (employeeNameInput) {
+                    employeeNameInput.value = fullNameInput?.value || '';
+                }
+
+                if (employeeDocumentInput) {
+                    employeeDocumentInput.value = documentNumberInput?.value || '';
+                }
+            };
 
             ctx.lineWidth = 2;
             ctx.lineCap = 'round';
@@ -195,6 +247,57 @@
             clearBtn.addEventListener('click', () => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 hiddenInput.value = '';
+            });
+
+            const autosave = async () => {
+                const formData = new FormData(form);
+                formData.set('action', 'draft');
+                formData.delete('verification_code');
+                formData.delete('id_front');
+                formData.delete('id_back');
+                formData.delete('selfie_with_id');
+
+                autosaveStatus.textContent = 'Guardando borrador...';
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'text/html',
+                        },
+                    });
+
+                    autosaveStatus.textContent = response.ok
+                        ? 'Borrador guardado automáticamente.'
+                        : 'No se pudo guardar el borrador automático.';
+                } catch (error) {
+                    autosaveStatus.textContent = 'No se pudo guardar el borrador automático.';
+                }
+            };
+
+            const scheduleAutosave = () => {
+                clearTimeout(autosaveTimer);
+                autosaveTimer = setTimeout(autosave, 1200);
+            };
+
+            companySelect?.addEventListener('change', () => {
+                syncDiscountAuthorizationFields();
+                scheduleAutosave();
+            });
+            fullNameInput?.addEventListener('input', syncDiscountAuthorizationFields);
+            documentNumberInput?.addEventListener('input', syncDiscountAuthorizationFields);
+
+            syncDiscountAuthorizationFields();
+
+            form.querySelectorAll('input, select, textarea').forEach((field) => {
+                if (field.type === 'file' || field.name === 'verification_code') {
+                    return;
+                }
+
+                field.addEventListener('input', scheduleAutosave);
+                field.addEventListener('change', scheduleAutosave);
             });
 
             form.addEventListener('submit', () => {

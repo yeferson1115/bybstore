@@ -21,6 +21,8 @@ Route::get('/', function () {
 Route::get('/solicitud-credito', [CreditApplicationController::class, 'create'])->name('credit-applications.create');
 Route::post('/solicitud-credito', [CreditApplicationController::class, 'store'])->name('credit-applications.store');
 Route::post('/solicitud-credito/retomar', [CreditApplicationController::class, 'resume'])->name('credit-applications.resume');
+Route::post('/solicitud-credito/enviar-codigo', [CreditApplicationController::class, 'sendPhoneCode'])->name('credit-applications.send-phone-code');
+Route::post('/solicitud-credito/verificar-codigo', [CreditApplicationController::class, 'verifyPhoneCode'])->name('credit-applications.verify-phone-code');
 Route::get('/solicitud-credito/{creditApplication}/pdf', [CreditApplicationController::class, 'downloadPdf'])->name('credit-applications.pdf');
 
 Route::middleware('auth')->group(function () {  
