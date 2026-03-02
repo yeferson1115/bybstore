@@ -119,6 +119,7 @@ class CreditApplicationController extends Controller
         }
 
         $data = $request->validate($rules);
+        $data = $this->syncAuthorizationFields($data);
 
         $application = CreditApplication::firstOrNew([
             'public_token' => $data['token'],
@@ -370,6 +371,8 @@ class CreditApplicationController extends Controller
             ->only($allowedFields)
             ->all();
 
+        $data = $this->syncAuthorizationFields($data);
+
         $application->fill($data);
         $application->status = $application->status ?: 'draft';
 
@@ -379,5 +382,27 @@ class CreditApplicationController extends Controller
             $application->phone_verification_code_hash = null;
             $application->phone_verification_expires_at = null;
         }
+    }
+
+    private function syncAuthorizationFields(array $data): array
+    {
+        if (! empty($data['company_id'])) {
+            $company = Company::find($data['company_id']);
+
+            if ($company) {
+                $data['employer_name'] = $company->name;
+                $data['employer_nit'] = $company->nit;
+            }
+        }
+
+        if (! empty($data['full_name'])) {
+            $data['employee_name'] = $data['full_name'];
+        }
+
+        if (! empty($data['document_number'])) {
+            $data['employee_document'] = $data['document_number'];
+        }
+
+        return $data;
     }
 }
