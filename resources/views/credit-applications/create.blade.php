@@ -187,7 +187,7 @@
                 const companyName = selectedOption?.dataset?.companyName || '';
                 const companyNit = selectedOption?.dataset?.companyNit || '';
 
-                if (employerNameInput) {https://github.com/yeferson1115/bybstore/pull/6/conflict?name=resources%252Fviews%252Fcredit-applications%252Fcreate.blade.php&ancestor_oid=29d8b0db71ec8980274acf7aa5fc9a2430d94b45&base_oid=c1b9880b6e4259b9b799baebbfc190f4a96ae3bc&head_oid=3734bfc7711e96e836479d573c4b4100dea9c42f
+                if (employerNameInput) {
                     employerNameInput.value = companyName;
                 }
 
@@ -238,6 +238,8 @@
 
             const end = () => {
                 drawing = false;
+                hiddenInput.value = canvas.toDataURL('image/png');
+                scheduleAutosave();
             };
 
             ['mousedown', 'touchstart'].forEach(evt => canvas.addEventListener(evt, start, { passive: false }));
@@ -281,6 +283,8 @@
                 clearTimeout(autosaveTimer);
                 autosaveTimer = setTimeout(autosave, 1200);
             };
+
+            setInterval(autosave, 30000);
 
             companySelect?.addEventListener('change', () => {
                 syncDiscountAuthorizationFields();
