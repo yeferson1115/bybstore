@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.app')
+
+@section('content')
     @php
         $statusColor = [
             'draft' => 'secondary',
@@ -129,4 +131,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

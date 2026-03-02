@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.app')
+
+@section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="card">
             <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-3">
@@ -74,4 +76,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection
