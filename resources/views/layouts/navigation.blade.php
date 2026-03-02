@@ -7,7 +7,7 @@
                     <a href="/dashboard" class="menu-link">
                       <i class="menu-icon icon-base ti tabler-smart-home"></i>
                       <div data-i18n="Inicio">Inicio</div>
-                    </a>                   
+                    </a>
                   </li>
                   
                   @can('Administracion')
@@ -17,14 +17,14 @@
                       <div data-i18n="Administración">Administración</div>
                     </a>
                    
-                    <ul class="menu-sub"> 
-                       @can('Ver Usuarios')                     
+                    <ul class="menu-sub">
+                       @can('Ver Usuarios')
                       <li class="menu-item">
                         <a href="/users" class="menu-link">
                           <i class="menu-icon fa-solid fa-users"></i>
                           <div data-i18n="Usuarios">Usuarios</div>
                         </a>
-                      </li>                     
+                      </li>
                       @endcan
                      
                       
@@ -36,12 +36,12 @@
                         </a>
                         <ul class="menu-sub">
                           <input type="hidden" value="{{$roles = Spatie\Permission\Models\Role::get()}}">
-                          @foreach ($roles as $role)                          
+                          @foreach ($roles as $role)
                           <li class="menu-item">
                             <a href="/roles/{{ $role->id }}/permissions/edit" class="menu-link">
                               <div data-i18n="{{ $role->name }}">{{ $role->name }}</div>
                             </a>
-                          </li>                          
+                          </li>
                           @endforeach
                         
                         </ul>
@@ -63,42 +63,15 @@
                     </a>
 
                     <ul class="menu-sub">
-                      @can('Ver Categorias')
-                      <li class="menu-item">
-                        <a href="/categories" class="menu-link">
-                          <i class="menu-icon fa-solid fa-layer-group"></i>
-                          <div data-i18n="Categorias">Categorias</div>
-                        </a>
-                      </li>
-                      @endcan
-                      @can('Ver Productos')
-                      <li class="menu-item">
-                        <a href="/products" class="menu-link">
-                          <i class="menu-icon fa-solid fa-bag-shopping"></i>
-                          <div data-i18n="Productos">Productos</div>
-                        </a>
-                      </li>
-                      @endcan
                       <li class="menu-item">
                         <a href="/companies" class="menu-link">
                           <i class="menu-icon fa-solid fa-building"></i>
                           <div data-i18n="Empresas">Empresas</div>
                         </a>
-                      </li> 
-                      @can('Ver Mesas')
-                      <li class="menu-item">
-                        <a href="/companies" class="menu-link">
-                          <i class="menu-icon fa-solid fa-building"></i>
-                          <div data-i18n="Empresas">Empresas</div>
-                        </a>
-                      </li> 
-                                     
+                      </li>
                     </ul>
                   </li>
                   @endcan
-                 
-                  
-                  
                 </ul>
               </div>
             </aside>
