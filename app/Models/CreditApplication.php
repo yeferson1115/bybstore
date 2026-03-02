@@ -48,6 +48,10 @@ class CreditApplication extends Model
         'id_front_path',
         'id_back_path',
         'selfie_with_id_path',
+        'phone_verification_code_hash',
+        'phone_verification_expires_at',
+        'phone_verified_at',
+        'phone_verified_number',
         'pdf_path',
         'submitted_at',
     ];
@@ -63,6 +67,8 @@ class CreditApplication extends Model
         'hire_date' => 'date',
         'first_installment_date' => 'date',
         'discount_authorization_date' => 'date',
+        'phone_verification_expires_at' => 'datetime',
+        'phone_verified_at' => 'datetime',
         'submitted_at' => 'datetime',
     ];
 }
