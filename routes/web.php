@@ -10,14 +10,19 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\CreditApplicationController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\AdminCreditApplicationController;
+use App\Http\Controllers\AdminCreditPaymentController;
+use App\Http\Controllers\PublicCreditPortalController;
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/', [PublicCreditPortalController::class, 'home'])->name('home');
+
+Route::get('/consultar-pagar-credito', [PublicCreditPortalController::class, 'index'])->name('credit-portal.index');
+Route::post('/consultar-pagar-credito/pagar', [PublicCreditPortalController::class, 'startPayment'])->name('credit-portal.pay');
+Route::get('/consultar-pagar-credito/checkout/{payment}', [PublicCreditPortalController::class, 'checkout'])->name('credit-portal.checkout');
+Route::get('/consultar-pagar-credito/finalizar', [PublicCreditPortalController::class, 'finishPayment'])->name('credit-portal.finish');
 
 Route::get('/solicitud-credito', [CreditApplicationController::class, 'create'])->name('credit-applications.create');
 Route::post('/solicitud-credito', [CreditApplicationController::class, 'store'])->name('credit-applications.store');
@@ -46,8 +51,8 @@ Route::middleware('auth')->group(function () {
     Route::get('admin/credit-applications', [AdminCreditApplicationController::class, 'index'])->name('admin.credit-applications.index');
     Route::get('admin/credit-applications/{creditApplication}', [AdminCreditApplicationController::class, 'show'])->name('admin.credit-applications.show');
     Route::patch('admin/credit-applications/{creditApplication}/status', [AdminCreditApplicationController::class, 'updateStatus'])->name('admin.credit-applications.update-status');
-
-
+    Route::get('admin/credit-payments', [AdminCreditPaymentController::class, 'index'])->name('admin.credit-payments.index');
+    Route::get('admin/credit-payments/export', [AdminCreditPaymentController::class, 'export'])->name('admin.credit-payments.export');
 
 });
 

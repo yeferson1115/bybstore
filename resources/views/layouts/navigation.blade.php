@@ -75,6 +75,12 @@
                           <div data-i18n="Solicitudes Crédito">Solicitudes Crédito</div>
                         </a>
                       </li>
+                      <li class="menu-item">
+                        <a href="{{ route('admin.credit-payments.index') }}" class="menu-link">
+                          <i class="menu-icon fa-solid fa-money-check-dollar"></i>
+                          <div data-i18n="Pagos Crédito">Pagos Crédito</div>
+                        </a>
+                      </li>
                     </ul>
                   </li>
                   @endcan
