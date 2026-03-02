@@ -59,7 +59,7 @@ class CreditApplicationController extends Controller
         ])->with('status', 'Borrador recuperado correctamente. Puedes continuar tu solicitud.');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $action = $request->input('action', 'draft');
         $isSubmit = $action === 'submit';
@@ -175,10 +175,6 @@ class CreditApplicationController extends Controller
 
         $application->save();
 
-        if ($request->ajax() && ! $isSubmit) {
-            return response()->noContent();
-        }
-
         if ($isSubmit) {
             $pdfPath = $this->generatePdf($application, $basePath);
             $application->pdf_path = $pdfPath;
@@ -215,8 +211,6 @@ class CreditApplicationController extends Controller
             'public_token' => $data['token'],
         ]);
 
-        $this->saveDraftSnapshot($application, $request->all());
-
         $code = (string) random_int(100000, 999999);
         $message = "Tu código de verificación BYB Store es: {$code}. Vence en " . self::PHONE_VERIFICATION_CODE_TTL_MINUTES . ' minutos.';
 
@@ -228,10 +222,12 @@ class CreditApplicationController extends Controller
             ])->withInput();
         }
 
+        $application->phone_primary = $data['phone_primary'];
         $application->phone_verification_code_hash = Hash::make($code);
         $application->phone_verification_expires_at = now()->addMinutes(self::PHONE_VERIFICATION_CODE_TTL_MINUTES);
         $application->phone_verified_at = null;
         $application->phone_verified_number = null;
+        $application->status = $application->status ?: 'draft';
         $application->save();
 
         return redirect()->route('credit-applications.create', ['token' => $application->public_token])
@@ -268,7 +264,7 @@ class CreditApplicationController extends Controller
             ])->withInput();
         }
 
-        $this->saveDraftSnapshot($application, $request->all());
+        $application->phone_primary = $data['phone_primary'];
         $application->phone_verified_number = $phone;
         $application->phone_verified_at = now();
         $application->phone_verification_code_hash = null;
@@ -352,32 +348,5 @@ class CreditApplicationController extends Controller
             ]);
 
         return $response->successful();
-    }
-
-    private function saveDraftSnapshot(CreditApplication $application, array $payload): void
-    {
-        $allowedFields = [
-            'request_date', 'full_name', 'document_type', 'document_number', 'document_issue_date',
-            'phone_primary', 'phone_secondary', 'email', 'residential_address', 'neighborhood', 'city',
-            'company_id', 'work_site', 'hire_date', 'contract_type', 'monthly_income',
-            'requested_products', 'net_value_without_interest', 'installment_value',
-            'first_installment_date', 'installments_count', 'payment_frequency', 'observations',
-            'employer_name', 'discount_authorization_date', 'employer_nit', 'employee_name',
-            'employee_document', 'employee_position', 'discount_concept', 'discount_total_value',
-        ];
-
-        $data = collect($payload)
-            ->only($allowedFields)
-            ->all();
-
-        $application->fill($data);
-        $application->status = $application->status ?: 'draft';
-
-        if (($data['phone_primary'] ?? null) && $application->phone_verified_number !== $this->normalizePhone((string) $data['phone_primary'])) {
-            $application->phone_verified_at = null;
-            $application->phone_verified_number = null;
-            $application->phone_verification_code_hash = null;
-            $application->phone_verification_expires_at = null;
-        }
     }
 }
