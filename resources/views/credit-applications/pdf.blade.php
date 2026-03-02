@@ -49,7 +49,7 @@
     <p><strong>Firma del solicitante:</strong></p>
     <div class="signature">
         @if ($application->signature_path)
-            <img src="{{ public_path('storage/' . $application->signature_path) }}" style="height: 88px;">
+            <img src="{{ public_path($application->signature_path) }}" style="height: 88px;">
         @endif
     </div>
 </body>

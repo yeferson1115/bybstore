@@ -7,9 +7,9 @@ use App\Models\CreditApplication;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -139,7 +139,7 @@ class CreditApplicationController extends Controller
 
         foreach (['id_front', 'id_back', 'selfie_with_id'] as $fileField) {
             if ($request->hasFile($fileField)) {
-                $path = $request->file($fileField)->store($basePath, 'public');
+                $path = $this->storePublicFile($request->file($fileField), $basePath, $fileField);
                 $modelField = $fileField . '_path';
                 $application->{$modelField} = $path;
             }
@@ -282,9 +282,11 @@ class CreditApplicationController extends Controller
 
     public function downloadPdf(CreditApplication $creditApplication)
     {
-        abort_unless($creditApplication->pdf_path && Storage::disk('public')->exists($creditApplication->pdf_path), 404);
+        $pdfAbsolutePath = $creditApplication->pdf_path ? public_path($creditApplication->pdf_path) : null;
 
-        return Storage::disk('public')->download($creditApplication->pdf_path, "solicitud-{$creditApplication->id}.pdf");
+        abort_unless($pdfAbsolutePath && file_exists($pdfAbsolutePath), 404);
+
+        return response()->download($pdfAbsolutePath, "solicitud-{$creditApplication->id}.pdf");
     }
 
     private function saveSignature(string $signatureData, string $basePath): ?string
@@ -301,7 +303,10 @@ class CreditApplicationController extends Controller
         }
 
         $signaturePath = $basePath . '/signature.png';
-        Storage::disk('public')->put($signaturePath, $decoded);
+
+        $fullPath = public_path($signaturePath);
+        $this->ensurePublicDirectoryExists(dirname($fullPath));
+        file_put_contents($fullPath, $decoded);
 
         return $signaturePath;
     }
@@ -313,9 +318,31 @@ class CreditApplicationController extends Controller
         ])->setPaper('a4');
 
         $path = $basePath . '/solicitud.pdf';
-        Storage::disk('public')->put($path, $pdf->output());
+        $fullPath = public_path($path);
+        $this->ensurePublicDirectoryExists(dirname($fullPath));
+        file_put_contents($fullPath, $pdf->output());
 
         return $path;
+    }
+
+    private function storePublicFile(UploadedFile $file, string $basePath, string $fileField): string
+    {
+        $extension = $file->getClientOriginalExtension() ?: $file->extension() ?: 'bin';
+        $filename = $fileField . '.' . strtolower($extension);
+        $destinationDirectory = public_path($basePath);
+
+        $this->ensurePublicDirectoryExists($destinationDirectory);
+
+        $file->move($destinationDirectory, $filename);
+
+        return $basePath . '/' . $filename;
+    }
+
+    private function ensurePublicDirectoryExists(string $directoryPath): void
+    {
+        if (! is_dir($directoryPath)) {
+            mkdir($directoryPath, 0755, true);
+        }
     }
 
     private function normalizePhone(string $phone): string
