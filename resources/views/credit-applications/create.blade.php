@@ -52,6 +52,7 @@
                     @csrf
                     <input type="hidden" name="token" value="{{ old('token', $token) }}">
                     <input type="hidden" name="signature_data" id="signature_data">
+                    <input type="hidden" name="remove_signature" id="remove_signature" value="0">
 
                     <h5>Datos personales</h5>
                     <div class="row g-3">
@@ -134,9 +135,39 @@
                     <hr>
                     <h5>Adjuntos obligatorios</h5>
                     <div class="row g-3">
-                        <div class="col-md-4"><label class="form-label">Cédula frente</label><input type="file" class="form-control" name="id_front"></div>
-                        <div class="col-md-4"><label class="form-label">Cédula reverso</label><input type="file" class="form-control" name="id_back"></div>
-                        <div class="col-md-4"><label class="form-label">Selfie con cédula</label><input type="file" class="form-control" name="selfie_with_id"></div>
+                        <div class="col-md-4">
+                            <label class="form-label">Cédula frente</label>
+                            <input type="file" class="form-control" name="id_front">
+                            @if ($application?->id_front_path)
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" name="remove_id_front" value="1" id="remove_id_front">
+                                    <label class="form-check-label" for="remove_id_front">Eliminar archivo actual</label>
+                                </div>
+                                <a href="{{ asset($application->id_front_path) }}" target="_blank" class="small">Ver archivo guardado</a>
+                            @endif
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Cédula reverso</label>
+                            <input type="file" class="form-control" name="id_back">
+                            @if ($application?->id_back_path)
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" name="remove_id_back" value="1" id="remove_id_back">
+                                    <label class="form-check-label" for="remove_id_back">Eliminar archivo actual</label>
+                                </div>
+                                <a href="{{ asset($application->id_back_path) }}" target="_blank" class="small">Ver archivo guardado</a>
+                            @endif
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Selfie con cédula</label>
+                            <input type="file" class="form-control" name="selfie_with_id">
+                            @if ($application?->selfie_with_id_path)
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" name="remove_selfie_with_id" value="1" id="remove_selfie_with_id">
+                                    <label class="form-check-label" for="remove_selfie_with_id">Eliminar archivo actual</label>
+                                </div>
+                                <a href="{{ asset($application->selfie_with_id_path) }}" target="_blank" class="small">Ver archivo guardado</a>
+                            @endif
+                        </div>
                     </div>
 
                     <hr>
@@ -149,7 +180,13 @@
                     </div>
 
                     @if ($application?->signature_path)
-                        <p class="mt-2 mb-0 text-success">Ya existe una firma guardada para este borrador.</p>
+                        <div class="mt-2">
+                            <a href="{{ asset($application->signature_path) }}" target="_blank" class="small d-inline-block">Ver firma guardada</a>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1" id="remove_signature_checkbox">
+                                <label class="form-check-label" for="remove_signature_checkbox">Eliminar firma guardada</label>
+                            </div>
+                        </div>
                     @endif
 
                     <div class="mt-4 d-flex gap-2">
@@ -168,6 +205,8 @@
         (() => {
             const canvas = document.getElementById('signature-pad');
             const hiddenInput = document.getElementById('signature_data');
+            const removeSignatureInput = document.getElementById('remove_signature');
+            const removeSignatureCheckbox = document.getElementById('remove_signature_checkbox');
             const clearBtn = document.getElementById('clear-signature');
             const form = document.getElementById('credit-form');
             const autosaveStatus = document.getElementById('autosave-status');
@@ -239,6 +278,12 @@
             const end = () => {
                 drawing = false;
                 hiddenInput.value = canvas.toDataURL('image/png');
+                if (removeSignatureInput) {
+                    removeSignatureInput.value = '0';
+                }
+                if (removeSignatureCheckbox) {
+                    removeSignatureCheckbox.checked = false;
+                }
                 scheduleAutosave();
             };
 
@@ -249,15 +294,15 @@
             clearBtn.addEventListener('click', () => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 hiddenInput.value = '';
+                if (removeSignatureInput) {
+                    removeSignatureInput.value = '1';
+                }
             });
 
             const autosave = async () => {
                 const formData = new FormData(form);
                 formData.set('action', 'draft');
                 formData.delete('verification_code');
-                formData.delete('id_front');
-                formData.delete('id_back');
-                formData.delete('selfie_with_id');
 
                 autosaveStatus.textContent = 'Guardando borrador...';
 
@@ -286,6 +331,13 @@
 
             setInterval(autosave, 30000);
 
+            removeSignatureCheckbox?.addEventListener('change', () => {
+                if (removeSignatureInput) {
+                    removeSignatureInput.value = removeSignatureCheckbox.checked ? '1' : '0';
+                }
+                scheduleAutosave();
+            });
+
             companySelect?.addEventListener('change', () => {
                 syncDiscountAuthorizationFields();
                 scheduleAutosave();
@@ -296,7 +348,7 @@
             syncDiscountAuthorizationFields();
 
             form.querySelectorAll('input, select, textarea').forEach((field) => {
-                if (field.type === 'file' || field.name === 'verification_code') {
+                if (field.name === 'verification_code') {
                     return;
                 }
 
@@ -306,6 +358,9 @@
 
             form.addEventListener('submit', () => {
                 hiddenInput.value = canvas.toDataURL('image/png');
+                if (removeSignatureInput && removeSignatureCheckbox?.checked) {
+                    removeSignatureInput.value = '1';
+                }
             });
         })();
     </script>

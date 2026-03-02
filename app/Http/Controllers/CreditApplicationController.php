@@ -101,6 +101,10 @@ class CreditApplicationController extends Controller
             'id_front' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'id_back' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'selfie_with_id' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'remove_id_front' => ['nullable', 'boolean'],
+            'remove_id_back' => ['nullable', 'boolean'],
+            'remove_selfie_with_id' => ['nullable', 'boolean'],
+            'remove_signature' => ['nullable', 'boolean'],
         ];
 
         if ($isSubmit) {
@@ -137,10 +141,29 @@ class CreditApplicationController extends Controller
 
         $basePath = "credit-applications/{$data['token']}";
 
+        $removableFiles = [
+            'id_front' => 'id_front_path',
+            'id_back' => 'id_back_path',
+            'selfie_with_id' => 'selfie_with_id_path',
+        ];
+
+        foreach ($removableFiles as $fileField => $modelField) {
+            if (! empty($data['remove_' . $fileField])) {
+                $this->deletePublicFile($application->{$modelField});
+                $application->{$modelField} = null;
+            }
+        }
+
+        if (! empty($data['remove_signature'])) {
+            $this->deletePublicFile($application->signature_path);
+            $application->signature_path = null;
+        }
+
         foreach (['id_front', 'id_back', 'selfie_with_id'] as $fileField) {
             if ($request->hasFile($fileField)) {
-                $path = $this->storePublicFile($request->file($fileField), $basePath, $fileField);
                 $modelField = $fileField . '_path';
+                $this->deletePublicFile($application->{$modelField});
+                $path = $this->storePublicFile($request->file($fileField), $basePath, $fileField);
                 $application->{$modelField} = $path;
             }
         }
@@ -148,6 +171,7 @@ class CreditApplicationController extends Controller
         if (! empty($data['signature_data'])) {
             $signaturePath = $this->saveSignature($data['signature_data'], $basePath);
             if ($signaturePath !== null) {
+                $this->deletePublicFile($application->signature_path);
                 $application->signature_path = $signaturePath;
             }
         }
@@ -342,6 +366,20 @@ class CreditApplicationController extends Controller
     {
         if (! is_dir($directoryPath)) {
             mkdir($directoryPath, 0755, true);
+        }
+    }
+
+
+    private function deletePublicFile(?string $relativePath): void
+    {
+        if (! $relativePath) {
+            return;
+        }
+
+        $fullPath = public_path($relativePath);
+
+        if (is_file($fullPath)) {
+            @unlink($fullPath);
         }
     }
 
