@@ -90,7 +90,7 @@
                     <div class="col-md-4">
                         <h6>Cédula frente</h6>
                         @if ($application->id_front_path)
-                            <a href="{{ asset('storage/' . $application->id_front_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver documento</a>
+                            <a href="{{ asset($application->id_front_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver documento</a>
                         @else
                             <p class="text-muted mb-0">No adjuntado.</p>
                         @endif
@@ -98,7 +98,7 @@
                     <div class="col-md-4">
                         <h6>Cédula reverso</h6>
                         @if ($application->id_back_path)
-                            <a href="{{ asset('storage/' . $application->id_back_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver documento</a>
+                            <a href="{{ asset($application->id_back_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver documento</a>
                         @else
                             <p class="text-muted mb-0">No adjuntado.</p>
                         @endif
@@ -106,7 +106,7 @@
                     <div class="col-md-4">
                         <h6>Selfie con cédula</h6>
                         @if ($application->selfie_with_id_path)
-                            <a href="{{ asset('storage/' . $application->selfie_with_id_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver imagen</a>
+                            <a href="{{ asset($application->selfie_with_id_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver imagen</a>
                         @else
                             <p class="text-muted mb-0">No adjuntado.</p>
                         @endif
@@ -114,7 +114,7 @@
                     <div class="col-md-4">
                         <h6>Firma</h6>
                         @if ($application->signature_path)
-                            <a href="{{ asset('storage/' . $application->signature_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver firma</a>
+                            <a href="{{ asset($application->signature_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver firma</a>
                         @else
                             <p class="text-muted mb-0">No adjuntada.</p>
                         @endif
