@@ -86,6 +86,12 @@
                         </a>
                       </li>
                       @endcan
+                      <li class="menu-item">
+                        <a href="/companies" class="menu-link">
+                          <i class="menu-icon fa-solid fa-building"></i>
+                          <div data-i18n="Empresas">Empresas</div>
+                        </a>
+                      </li> 
                       @can('Ver Mesas')
                       <li class="menu-item">
                         <a href="/tables" class="menu-link">

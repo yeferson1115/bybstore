@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\CreditApplication;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -23,6 +24,7 @@ class CreditApplicationController extends Controller
 
         return view('credit-applications.create', [
             'application' => $application,
+            'companies' => Company::orderBy('name')->get(['id', 'name', 'nit']),
             'token' => $application?->public_token ?? (string) Str::uuid(),
         ]);
     }
@@ -45,7 +47,7 @@ class CreditApplicationController extends Controller
             'residential_address' => ['nullable', 'string', 'max:255'],
             'neighborhood' => ['nullable', 'string', 'max:120'],
             'city' => ['nullable', 'string', 'max:120'],
-            'company_name' => ['nullable', 'string', 'max:255'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
             'work_site' => ['nullable', 'string', 'max:120'],
             'hire_date' => ['nullable', 'date'],
             'contract_type' => ['nullable', 'string', 'max:120'],
@@ -74,7 +76,7 @@ class CreditApplicationController extends Controller
         if ($isSubmit) {
             $requiredFields = [
                 'request_date', 'full_name', 'document_type', 'document_number', 'phone_primary',
-                'email', 'residential_address', 'city', 'company_name', 'monthly_income',
+                'email', 'residential_address', 'city', 'company_id', 'monthly_income',
                 'requested_products', 'installment_value', 'installments_count', 'payment_frequency',
                 'employer_name', 'employee_name',
             ];

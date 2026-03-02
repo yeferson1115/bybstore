@@ -28,7 +28,7 @@
 
     <div class="title">DATOS LABORALES Y CRÉDITO</div>
     <table>
-        <tr><td class="label">Empresa</td><td>{{ $application->company_name }}</td></tr>
+        <tr><td class="label">Empresa</td><td>{{ $application->company?->name }}</td></tr>
         <tr><td class="label">Sede / Contrato</td><td>{{ $application->work_site }} / {{ $application->contract_type }}</td></tr>
         <tr><td class="label">Ingreso mensual</td><td>${{ number_format((float) $application->monthly_income, 2, ',', '.') }}</td></tr>
         <tr><td class="label">Productos solicitados</td><td>{{ $application->requested_products }}</td></tr>

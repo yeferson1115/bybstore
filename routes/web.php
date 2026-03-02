@@ -16,6 +16,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\CreditApplicationController;
+use App\Http\Controllers\CompanyController;
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
@@ -45,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/roles/{roleId}/permissions/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
     Route::put('/roles/{roleId}/permissions', [PermissionController::class, 'update'])->name('permissions.update');
     Route::resource('tables', TableController::class);
+    Route::resource('companies', CompanyController::class)->except(['show']);
     Route::get('/products/{id}/addons', [ProductController::class, 'getAddons']);
     Route::get('/products/filter/list', [ProductController::class, 'filterProducts'])
     ->name('products.filter');

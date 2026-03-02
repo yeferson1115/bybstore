@@ -41,7 +41,16 @@
                     <hr>
                     <h5>Datos laborales y crédito</h5>
                     <div class="row g-3">
-                        <div class="col-md-6"><label class="form-label">Empresa donde labora</label><input class="form-control" name="company_name" value="{{ old('company_name', $application?->company_name) }}"></div>
+                        <div class="col-md-6"><label class="form-label">Empresa donde labora</label>
+                            <select class="form-control" name="company_id">
+                                <option value="">Selecciona una empresa</option>
+                                @foreach ($companies as $company)
+                                    <option value="{{ $company->id }}" @selected((string) old('company_id', $application?->company_id) === (string) $company->id)>
+                                        {{ $company->name }} - NIT {{ $company->nit }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="col-md-6"><label class="form-label">Sede</label><input class="form-control" name="work_site" value="{{ old('work_site', $application?->work_site) }}"></div>
                         <div class="col-md-4"><label class="form-label">Tipo contrato</label><input class="form-control" name="contract_type" value="{{ old('contract_type', $application?->contract_type) }}"></div>
                         <div class="col-md-4"><label class="form-label">Ingresos mensuales</label><input type="number" step="0.01" class="form-control" name="monthly_income" value="{{ old('monthly_income', $application?->monthly_income) }}"></div>

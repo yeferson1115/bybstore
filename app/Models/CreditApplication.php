@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CreditApplication extends Model
 {
@@ -23,7 +24,7 @@ class CreditApplication extends Model
         'residential_address',
         'neighborhood',
         'city',
-        'company_name',
+        'company_id',
         'work_site',
         'hire_date',
         'contract_type',
@@ -50,6 +51,11 @@ class CreditApplication extends Model
         'pdf_path',
         'submitted_at',
     ];
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     protected $casts = [
         'request_date' => 'date',
