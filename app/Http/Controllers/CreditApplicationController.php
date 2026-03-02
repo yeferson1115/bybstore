@@ -29,6 +29,32 @@ class CreditApplicationController extends Controller
         ]);
     }
 
+
+    public function resume(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'document_number' => ['required', 'string', 'max:60'],
+            'phone_primary' => ['required', 'string', 'max:30'],
+        ]);
+
+        $application = CreditApplication::query()
+            ->where('document_number', $data['document_number'])
+            ->where('phone_primary', $data['phone_primary'])
+            ->where('status', 'draft')
+            ->latest('updated_at')
+            ->first();
+
+        if (! $application) {
+            return back()->withErrors([
+                'resume' => 'No encontramos un borrador con esos datos. Verifica número de documento y celular.',
+            ])->withInput();
+        }
+
+        return redirect()->route('credit-applications.create', [
+            'token' => $application->public_token,
+        ])->with('status', 'Borrador recuperado correctamente. Puedes continuar tu solicitud.');
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $action = $request->input('action', 'draft');
@@ -139,12 +165,14 @@ class CreditApplicationController extends Controller
 
             return redirect()
                 ->route('credit-applications.create', ['token' => $application->public_token])
-                ->with('status', 'Solicitud enviada correctamente. PDF generado.');
+                ->with('status', 'Solicitud enviada correctamente. PDF generado.')
+                ->with('resume_url', route('credit-applications.create', ['token' => $application->public_token]));
         }
 
         return redirect()
             ->route('credit-applications.create', ['token' => $application->public_token])
-            ->with('status', 'Borrador guardado correctamente.');
+            ->with('status', 'Borrador guardado correctamente.')
+            ->with('resume_url', route('credit-applications.create', ['token' => $application->public_token]));
     }
 
     public function downloadPdf(CreditApplication $creditApplication)

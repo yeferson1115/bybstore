@@ -63,7 +63,29 @@
                     </a>
 
                     <ul class="menu-sub">
-                      
+                      @can('Ver Categorias')
+                      <li class="menu-item">
+                        <a href="/categories" class="menu-link">
+                          <i class="menu-icon fa-solid fa-layer-group"></i>
+                          <div data-i18n="Categorias">Categorias</div>
+                        </a>
+                      </li>
+                      @endcan
+                      @can('Ver Productos')
+                      <li class="menu-item">
+                        <a href="/products" class="menu-link">
+                          <i class="menu-icon fa-solid fa-bag-shopping"></i>
+                          <div data-i18n="Productos">Productos</div>
+                        </a>
+                      </li>
+                      @endcan
+                      <li class="menu-item">
+                        <a href="/companies" class="menu-link">
+                          <i class="menu-icon fa-solid fa-building"></i>
+                          <div data-i18n="Empresas">Empresas</div>
+                        </a>
+                      </li> 
+                      @can('Ver Mesas')
                       <li class="menu-item">
                         <a href="/companies" class="menu-link">
                           <i class="menu-icon fa-solid fa-building"></i>

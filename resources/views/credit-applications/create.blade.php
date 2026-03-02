@@ -19,6 +19,33 @@
                     </div>
                 @endif
 
+                @if (session('resume_url'))
+                    <div class="alert alert-info">
+                        <div><strong>Enlace para retomar:</strong></div>
+                        <div><a href="{{ session('resume_url') }}">{{ session('resume_url') }}</a></div>
+                        <small>Guárdalo para continuar luego sin perder tu progreso.</small>
+                    </div>
+                @endif
+
+                <div class="card border mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">¿Ya habías iniciado una solicitud?</h5>
+                        <form action="{{ route('credit-applications.resume') }}" method="POST" class="row g-3">
+                            @csrf
+                            <div class="col-md-4">
+                                <label class="form-label">Número de documento</label>
+                                <input class="form-control" name="document_number" value="{{ old('document_number') }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Celular principal</label>
+                                <input class="form-control" name="phone_primary" value="{{ old('phone_primary') }}" required>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-outline-primary w-100">Retomar solicitud</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <form action="{{ route('credit-applications.store') }}" method="POST" enctype="multipart/form-data" id="credit-form">
                     @csrf
                     <input type="hidden" name="token" value="{{ old('token', $token) }}">
