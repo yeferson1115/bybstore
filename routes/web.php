@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\CreditApplicationController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\AdminCreditApplicationController;
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
@@ -41,7 +42,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/roles/{roleId}/permissions', [PermissionController::class, 'update'])->name('permissions.update');
     
     Route::resource('companies', CompanyController::class)->except(['show']);
-    
+
+    Route::get('admin/credit-applications', [AdminCreditApplicationController::class, 'index'])->name('admin.credit-applications.index');
+    Route::get('admin/credit-applications/{creditApplication}', [AdminCreditApplicationController::class, 'show'])->name('admin.credit-applications.show');
+    Route::patch('admin/credit-applications/{creditApplication}/status', [AdminCreditApplicationController::class, 'updateStatus'])->name('admin.credit-applications.update-status');
 
 
 
