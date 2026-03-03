@@ -16,8 +16,15 @@
         }
 
         body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             background: linear-gradient(180deg, #f9fafb 0%, #ffffff 45%, #f3f4f6 100%);
             color: #1f2937;
+        }
+
+        main {
+            flex: 1;
         }
 
         .site-header {
@@ -68,6 +75,22 @@
             background: linear-gradient(120deg, var(--brand-orange), var(--brand-pink), var(--brand-purple));
             transform: translateY(-1px);
             box-shadow: 0 14px 26px rgba(244, 40, 157, 0.24);
+        }
+
+        .btn-soft-brand {
+            border: 1px solid rgba(140, 61, 255, 0.22);
+            color: #5b21b6;
+            background: linear-gradient(130deg, rgba(255, 255, 255, 0.95), rgba(245, 243, 255, 0.95));
+            box-shadow: 0 6px 18px rgba(99, 102, 241, 0.12);
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease;
+        }
+
+        .btn-soft-brand:hover {
+            color: #fff;
+            border-color: transparent;
+            background: linear-gradient(120deg, var(--brand-orange), var(--brand-pink), var(--brand-purple));
+            transform: translateY(-1px);
+            box-shadow: 0 14px 26px rgba(140, 61, 255, 0.22);
         }
 
         .credit-form-header {
