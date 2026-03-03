@@ -16,8 +16,15 @@
         }
 
         body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             background: linear-gradient(180deg, #f9fafb 0%, #ffffff 45%, #f3f4f6 100%);
             color: #1f2937;
+        }
+
+        main {
+            flex: 1 0 auto;
         }
 
         .site-header {
@@ -54,6 +61,22 @@
             box-shadow: 0 10px 25px rgba(99, 102, 241, 0.16);
         }
 
+
+
+        .btn-brand-soft {
+            color: #fff;
+            border: 0;
+            background: linear-gradient(120deg, #23c8f5, #8c3dff);
+            box-shadow: 0 10px 24px rgba(35, 200, 245, 0.22);
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .btn-brand-soft:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 16px 30px rgba(35, 200, 245, 0.3);
+            filter: brightness(1.04);
+        }
 
         .btn-outline-brand {
             border: 1px solid rgba(140, 61, 255, 0.4);

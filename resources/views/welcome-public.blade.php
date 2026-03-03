@@ -16,8 +16,15 @@
         }
 
         body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             background: linear-gradient(180deg, #f9fafb 0%, #ffffff 45%, #f3f4f6 100%);
             color: #1f2937;
+        }
+
+        main {
+            flex: 1 0 auto;
         }
 
         .brand-gradient {
