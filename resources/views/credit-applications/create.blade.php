@@ -209,6 +209,7 @@
             const removeSignatureCheckbox = document.getElementById('remove_signature_checkbox');
             const clearBtn = document.getElementById('clear-signature');
             const form = document.getElementById('credit-form');
+            const formActionUrl = form?.getAttribute('action') || window.location.href;
             const autosaveStatus = document.getElementById('autosave-status');
             const fullNameInput = document.getElementById('full_name');
             const documentNumberInput = document.getElementById('document_number');
@@ -307,7 +308,7 @@
                 autosaveStatus.textContent = 'Guardando borrador...';
 
                 try {
-                    const response = await fetch(form.action, {
+                    const response = await fetch(formActionUrl, {
                         method: 'POST',
                         body: formData,
                         headers: {
