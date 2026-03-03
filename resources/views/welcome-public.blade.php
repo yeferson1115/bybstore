@@ -193,6 +193,7 @@
                     <small class="text-white-50">© {{ now()->year }} B&B Store. Todos los derechos reservados.</small>
                 </div>
             </div>
+            <a href="{{ route('credit-applications.create') }}" class="btn btn-dark rounded-pill px-4">Solicitar crédito</a>
         </div>
     </footer>
 </body>
