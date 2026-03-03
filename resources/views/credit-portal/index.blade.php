@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-public-layout>
     <div class="container py-4">
         @if (session('status'))
             <div class="alert alert-success">{{ session('status') }}</div>
@@ -97,4 +97,4 @@
             </div>
         @endif
     </div>
-</x-guest-layout>
+</x-public-layout>
