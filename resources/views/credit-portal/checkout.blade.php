@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-public-layout>
     <div class="container py-5">
         <div class="card mx-auto" style="max-width: 720px;">
             <div class="card-body">
@@ -25,4 +25,4 @@
             </div>
         </div>
     </div>
-</x-guest-layout>
+</x-public-layout>

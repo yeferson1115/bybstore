@@ -1,27 +1,32 @@
-<x-guest-layout>
-    <div class="container py-4">
+<x-public-layout>
+    <div class="container py-5">
+        <div class="brand-card mb-4">
+            <div class="brand-card-header p-4">
+                <h3 class="mb-1 fw-bold">Consultar y pagar crédito</h3>
+                <p class="mb-0 text-white-50">Revisa tus cuotas pendientes y paga en línea de forma segura.</p>
+            </div>
+        </div>
         @if (session('status'))
             <div class="alert alert-success">{{ session('status') }}</div>
         @endif
 
-        <div class="card mb-4">
+        <div class="card brand-card mb-4">
             <div class="card-body">
-                <h4 class="mb-3">Consultar y pagar crédito</h4>
-                <form method="GET" action="{{ route('credit-portal.index') }}" class="row g-3">
+                                <form method="GET" action="{{ route('credit-portal.index') }}" class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Cédula</label>
                         <input class="form-control" name="document_number" value="{{ $documentNumber }}" required>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
-                        <button class="btn btn-primary w-100">Consultar</button>
+                        <button class="btn btn-brand w-100">Consultar</button>
                     </div>
                 </form>
             </div>
         </div>
 
         @if ($documentNumber)
-            <div class="card mb-4">
-                <div class="card-header"><h5 class="mb-0">Créditos aprobados</h5></div>
+            <div class="card brand-card mb-4">
+                <div class="card-header brand-card-header"><h5 class="mb-0">Créditos aprobados</h5></div>
                 <div class="card-body">
                     @forelse ($applications as $application)
                         @php
@@ -44,7 +49,7 @@
                                     @csrf
                                     <input type="hidden" name="credit_application_id" value="{{ $application->id }}">
                                     <input type="hidden" name="document_number" value="{{ $documentNumber }}">
-                                    <button class="btn btn-success">Pagar próxima cuota con Wompi</button>
+                                    <button class="btn btn-brand">Pagar próxima cuota con Wompi</button>
                                 </form>
                             @endif
                         </div>
@@ -54,8 +59,8 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-header"><h5 class="mb-0">Historial de pagos</h5></div>
+            <div class="card brand-card">
+                <div class="card-header brand-card-header"><h5 class="mb-0">Historial de pagos</h5></div>
                 <div class="card-body table-responsive">
                     <table class="table table-sm align-middle">
                         <thead>
@@ -81,7 +86,7 @@
                                             <form method="POST" action="{{ route('credit-portal.refresh', $payment) }}">
                                                 @csrf
                                                 <input type="hidden" name="document_number" value="{{ $documentNumber }}">
-                                                <button class="btn btn-sm btn-outline-primary">Consultar transacción</button>
+                                                <button class="btn btn-sm btn-outline-brand">Consultar transacción</button>
                                             </form>
                                         @else
                                             <span class="text-muted">—</span>
@@ -97,4 +102,4 @@
             </div>
         @endif
     </div>
-</x-guest-layout>
+</x-public-layout>
