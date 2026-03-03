@@ -13,7 +13,7 @@
                         <input class="form-control" name="document_number" value="{{ $documentNumber }}" required>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
-                        <button class="btn btn-primary w-100">Consultar</button>
+                        <button class="btn btn-soft-brand w-100 fw-semibold">Consultar</button>
                     </div>
                 </form>
             </div>
