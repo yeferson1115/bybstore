@@ -65,6 +65,7 @@
                                 <th>Monto</th>
                                 <th>Estado</th>
                                 <th>Fecha</th>
+                                <th>Acción</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -75,9 +76,20 @@
                                     <td>${{ number_format((float) $payment->amount, 0, ',', '.') }}</td>
                                     <td><span class="badge bg-{{ $payment->status === 'approved' ? 'success' : 'secondary' }}">{{ $payment->status }}</span></td>
                                     <td>{{ optional($payment->paid_at ?? $payment->created_at)->format('d/m/Y H:i') }}</td>
+                                    <td>
+                                        @if ($payment->status !== 'approved')
+                                            <form method="POST" action="{{ route('credit-portal.refresh', $payment) }}">
+                                                @csrf
+                                                <input type="hidden" name="document_number" value="{{ $documentNumber }}">
+                                                <button class="btn btn-sm btn-outline-primary">Consultar transacción</button>
+                                            </form>
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="5" class="text-muted">Sin pagos registrados.</td></tr>
+                                <tr><td colspan="6" class="text-muted">Sin pagos registrados.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
