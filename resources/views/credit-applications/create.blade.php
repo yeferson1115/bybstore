@@ -9,6 +9,14 @@
                     <div class="alert alert-success">{{ session('status') }}</div>
                 @endif
 
+
+                @if (session('phone_verification_code_preview'))
+                    <div class="alert alert-warning">
+                        <strong>Modo pruebas:</strong> código temporal para validar celular:
+                        <span class="badge bg-dark">{{ session('phone_verification_code_preview') }}</span>
+                    </div>
+                @endif
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul class="mb-0">
@@ -221,6 +229,7 @@
             const ctx = canvas.getContext('2d');
             let drawing = false;
             let autosaveTimer;
+            let hasSignatureStroke = false;
 
             const syncDiscountAuthorizationFields = () => {
                 const selectedOption = companySelect?.options?.[companySelect.selectedIndex];
@@ -263,6 +272,9 @@
                 const p = position(e);
                 ctx.beginPath();
                 ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+                hasSignatureStroke = true;
                 e.preventDefault();
             };
 
@@ -273,12 +285,15 @@
                 const p = position(e);
                 ctx.lineTo(p.x, p.y);
                 ctx.stroke();
+                hasSignatureStroke = true;
                 e.preventDefault();
             };
 
             const end = () => {
                 drawing = false;
-                hiddenInput.value = canvas.toDataURL('image/png');
+                if (hasSignatureStroke) {
+                    hiddenInput.value = canvas.toDataURL('image/png');
+                }
                 if (removeSignatureInput) {
                     removeSignatureInput.value = '0';
                 }
@@ -288,13 +303,14 @@
                 scheduleAutosave();
             };
 
-            ['mousedown', 'touchstart'].forEach(evt => canvas.addEventListener(evt, start, { passive: false }));
-            ['mousemove', 'touchmove'].forEach(evt => canvas.addEventListener(evt, move, { passive: false }));
-            ['mouseup', 'mouseleave', 'touchend'].forEach(evt => canvas.addEventListener(evt, end));
+            ['mousedown', 'touchstart', 'pointerdown'].forEach(evt => canvas.addEventListener(evt, start, { passive: false }));
+            ['mousemove', 'touchmove', 'pointermove'].forEach(evt => canvas.addEventListener(evt, move, { passive: false }));
+            ['mouseup', 'mouseleave', 'touchend', 'pointerup', 'pointerleave'].forEach(evt => canvas.addEventListener(evt, end));
 
             clearBtn.addEventListener('click', () => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 hiddenInput.value = '';
+                hasSignatureStroke = false;
                 if (removeSignatureInput) {
                     removeSignatureInput.value = '1';
                 }
@@ -358,7 +374,9 @@
             });
 
             form.addEventListener('submit', () => {
-                hiddenInput.value = canvas.toDataURL('image/png');
+                if (hasSignatureStroke) {
+                    hiddenInput.value = canvas.toDataURL('image/png');
+                }
                 if (removeSignatureInput && removeSignatureCheckbox?.checked) {
                     removeSignatureInput.value = '1';
                 }
