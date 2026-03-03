@@ -63,6 +63,7 @@ class CreditApplicationController extends Controller
     {
         $action = $request->input('action', 'draft');
         $isSubmit = $action === 'submit';
+        $application = CreditApplication::where('public_token', (string) $request->input('token'))->first();
 
         $rules = [
             'token' => ['required', 'string'],
@@ -119,20 +120,23 @@ class CreditApplicationController extends Controller
                 $rules[$field][0] = 'required';
             }
 
-            $rules['signature_data'] = ['required', 'string'];
+            $hasStoredSignature = (bool) $application?->signature_path;
+            $rules['signature_data'] = $hasStoredSignature
+                ? ['nullable', 'string']
+                : ['required', 'string'];
         }
 
         $data = $request->validate($rules);
         $data = $this->syncAuthorizationFields($data);
 
-        $application = CreditApplication::firstOrNew([
+        $application = $application ?: CreditApplication::firstOrNew([
             'public_token' => $data['token'],
         ]);
 
         $application->fill($data);
         $application->status = $isSubmit ? 'submitted' : 'draft';
 
-        if (($data['phone_primary'] ?? null) && $application->phone_verified_number !== $this->normalizePhone($data['phone_primary'])) {
+        if (($data['phone_primary'] ?? null) && $application->phone_verified_at && $application->phone_verified_number !== $this->normalizePhone($data['phone_primary'])) {
             $application->phone_verified_at = null;
             $application->phone_verified_number = null;
             $application->phone_verification_code_hash = null;
@@ -169,14 +173,25 @@ class CreditApplicationController extends Controller
         }
 
         if (! empty($data['signature_data'])) {
+            $previousSignaturePath = $application->signature_path;
             $signaturePath = $this->saveSignature($data['signature_data'], $basePath);
+
             if ($signaturePath !== null) {
-                $this->deletePublicFile($application->signature_path);
+                if ($previousSignaturePath && $previousSignaturePath !== $signaturePath) {
+                    $this->deletePublicFile($previousSignaturePath);
+                }
+
                 $application->signature_path = $signaturePath;
             }
         }
 
         if ($isSubmit) {
+            if (! empty($data['remove_signature']) && empty($data['signature_data'])) {
+                return back()->withErrors([
+                    'signature_data' => 'Debes volver a firmar antes de enviar la solicitud.',
+                ])->withInput();
+            }
+
             if (! $application->phone_verified_at || $application->phone_verified_number !== $this->normalizePhone((string) $application->phone_primary)) {
                 return back()->withErrors([
                     'phone_verification' => 'Debes validar tu celular por código SMS antes de enviar la solicitud.',
@@ -259,8 +274,14 @@ class CreditApplicationController extends Controller
         $application->phone_verified_number = null;
         $application->save();
 
-        return redirect()->route('credit-applications.create', ['token' => $application->public_token])
+        $response = redirect()->route('credit-applications.create', ['token' => $application->public_token])
             ->with('status', 'Te enviamos un código por SMS. Ingrésalo para validar tu celular.');
+
+        if (config('app.debug')) {
+            $response->with('phone_verification_code_preview', $code);
+        }
+
+        return $response;
     }
 
     public function verifyPhoneCode(Request $request): RedirectResponse
@@ -315,11 +336,12 @@ class CreditApplicationController extends Controller
 
     private function saveSignature(string $signatureData, string $basePath): ?string
     {
-        if (! str_starts_with($signatureData, 'data:image/png;base64,')) {
+        if (! str_contains($signatureData, 'base64,')) {
             return null;
         }
 
-        $rawData = substr($signatureData, strpos($signatureData, ',') + 1);
+        $rawData = substr($signatureData, strpos($signatureData, 'base64,') + 7);
+        $rawData = preg_replace('/\s+/', '', $rawData) ?? '';
         $decoded = base64_decode($rawData, true);
 
         if ($decoded === false) {
@@ -441,7 +463,7 @@ class CreditApplicationController extends Controller
         $application->fill($data);
         $application->status = $application->status ?: 'draft';
 
-        if (($data['phone_primary'] ?? null) && $application->phone_verified_number !== $this->normalizePhone((string) $data['phone_primary'])) {
+        if (($data['phone_primary'] ?? null) && $application->phone_verified_at && $application->phone_verified_number !== $this->normalizePhone((string) $data['phone_primary'])) {
             $application->phone_verified_at = null;
             $application->phone_verified_number = null;
             $application->phone_verification_code_hash = null;
