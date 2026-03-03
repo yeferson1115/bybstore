@@ -70,11 +70,32 @@
             color: #fff;
             border: 0;
             background: linear-gradient(120deg, var(--brand-orange), var(--brand-pink), var(--brand-purple));
+            box-shadow: 0 10px 24px rgba(140, 61, 255, 0.24);
+            transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
         }
 
         .btn-brand:hover {
             color: #fff;
-            filter: brightness(1.05);
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 16px 34px rgba(140, 61, 255, 0.3);
+            filter: brightness(1.06);
+        }
+
+        .btn-motion {
+            animation: floatingPulse 3.2s ease-in-out infinite;
+        }
+
+        .btn-motion:nth-child(2) {
+            animation-delay: .35s;
+        }
+
+        @keyframes floatingPulse {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
         }
 
         .btn-outline-brand {
@@ -124,7 +145,7 @@
                     <small class="text-muted">Tienda virtual al alcance de todos</small>
                 </div>
             </div>
-            <a href="{{ route('credit-applications.create') }}" class="btn btn-dark rounded-pill px-4">Solicitar crédito</a>
+            <a href="{{ route('credit-applications.create') }}" class="btn btn-brand rounded-pill px-4">Solicitar crédito</a>
         </div>
     </header>
 
@@ -137,8 +158,8 @@
                         <h2 class="display-5 fw-bold mb-3">Impulsamos tus compras con estilo, cercanía y confianza.</h2>
                         <p class="lead mb-4">En B&B Store reunimos productos de calidad y alternativas de financiación fáciles para que compres desde casa de forma segura, rápida y profesional.</p>
                         <div class="d-flex flex-wrap gap-3">
-                            <a href="{{ route('credit-applications.create') }}" class="btn btn-brand btn-lg rounded-pill px-4">Solicitar crédito</a>
-                            <a href="{{ route('credit-portal.index') }}" class="btn btn-outline-brand btn-lg rounded-pill px-4">Consultar y pagar</a>
+                            <a href="{{ route('credit-applications.create') }}" class="btn btn-brand btn-lg rounded-pill px-4 btn-motion">Solicitar crédito</a>
+                            <a href="{{ route('credit-portal.index') }}" class="btn btn-outline-brand btn-lg rounded-pill px-4 btn-motion">Consultar y pagar</a>
                         </div>
                     </div>
                     <div class="col-lg-5">
