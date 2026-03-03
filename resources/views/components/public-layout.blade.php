@@ -53,8 +53,8 @@
         }
 
         .logo-wrap {
-            width: 58px;
-            height: 58px;
+            width: 90px;
+            height: 90px;
             border-radius: 16px;
             padding: 6px;
             background: white;
