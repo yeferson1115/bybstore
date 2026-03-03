@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-public-layout>
     <div class="container py-4">
         <div class="card">
             <div class="card-header bg-primary text-white">
@@ -364,4 +364,4 @@
             });
         })();
     </script>
-</x-guest-layout>
+</x-public-layout>
