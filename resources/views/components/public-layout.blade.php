@@ -16,14 +16,40 @@
         }
 
         body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             background: linear-gradient(180deg, #f9fafb 0%, #ffffff 45%, #f3f4f6 100%);
             color: #1f2937;
+        }
+
+        main {
+            flex: 1 0 auto;
         }
 
         .site-header {
             backdrop-filter: blur(8px);
             background: rgba(255, 255, 255, 0.88);
             border-bottom: 1px solid rgba(17, 24, 39, 0.06);
+        }
+
+        .brand-gradient {
+            background: linear-gradient(115deg, var(--brand-orange), var(--brand-pink), var(--brand-purple), var(--brand-cyan));
+        }
+
+        .btn-brand {
+            color: #fff;
+            border: 0;
+            background: linear-gradient(120deg, var(--brand-orange), var(--brand-pink), var(--brand-purple));
+            box-shadow: 0 10px 24px rgba(140, 61, 255, 0.24);
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .btn-brand:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 16px 30px rgba(140, 61, 255, 0.28);
+            filter: brightness(1.04);
         }
 
         .logo-wrap {
@@ -33,6 +59,43 @@
             padding: 6px;
             background: white;
             box-shadow: 0 10px 25px rgba(99, 102, 241, 0.16);
+        }
+
+
+
+        .btn-brand-soft {
+            color: #fff;
+            border: 0;
+            background: linear-gradient(120deg, #23c8f5, #8c3dff);
+            box-shadow: 0 10px 24px rgba(35, 200, 245, 0.22);
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .btn-brand-soft:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 16px 30px rgba(35, 200, 245, 0.3);
+            filter: brightness(1.04);
+        }
+
+        .btn-outline-brand {
+            border: 1px solid rgba(140, 61, 255, 0.4);
+            color: var(--brand-purple);
+            background: rgba(255, 255, 255, 0.9);
+            transition: transform .2s ease, box-shadow .2s ease, color .2s ease, border-color .2s ease;
+        }
+
+        .btn-outline-brand:hover {
+            color: #fff;
+            border-color: transparent;
+            background: linear-gradient(120deg, var(--brand-orange), var(--brand-pink), var(--brand-purple));
+            transform: translateY(-1px);
+            box-shadow: 0 14px 26px rgba(244, 40, 157, 0.24);
+        }
+
+        .credit-form-header {
+            border: 0;
+            background: linear-gradient(120deg, rgba(255, 127, 42, 0.95), rgba(244, 40, 157, 0.95), rgba(140, 61, 255, 0.95));
         }
 
         .social-link {
@@ -65,7 +128,7 @@
                     <small class="text-muted">Tienda virtual al alcance de todos</small>
                 </div>
             </div>
-            <a href="{{ route('credit-applications.create') }}" class="btn btn-dark rounded-pill px-4">Solicitar crédito</a>
+            <a href="{{ route('credit-applications.create') }}" class="btn btn-brand rounded-pill px-4">Solicitar crédito</a>
         </div>
     </header>
 

@@ -13,7 +13,7 @@
                         <input class="form-control" name="document_number" value="{{ $documentNumber }}" required>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
-                        <button class="btn btn-primary w-100">Consultar</button>
+                        <button class="btn btn-brand w-100">Consultar</button>
                     </div>
                 </form>
             </div>
@@ -44,7 +44,7 @@
                                     @csrf
                                     <input type="hidden" name="credit_application_id" value="{{ $application->id }}">
                                     <input type="hidden" name="document_number" value="{{ $documentNumber }}">
-                                    <button class="btn btn-success">Pagar próxima cuota con Wompi</button>
+                                    <button class="btn btn-brand-soft">Pagar próxima cuota con Wompi</button>
                                 </form>
                             @endif
                         </div>
@@ -81,7 +81,7 @@
                                             <form method="POST" action="{{ route('credit-portal.refresh', $payment) }}">
                                                 @csrf
                                                 <input type="hidden" name="document_number" value="{{ $documentNumber }}">
-                                                <button class="btn btn-sm btn-outline-primary">Consultar transacción</button>
+                                                <button class="btn btn-sm btn-outline-brand">Consultar transacción</button>
                                             </form>
                                         @else
                                             <span class="text-muted">—</span>
