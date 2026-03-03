@@ -70,6 +70,7 @@
             color: #fff;
             border: 0;
             background: linear-gradient(120deg, var(--brand-orange), var(--brand-pink), var(--brand-purple));
+            box-shadow: 0 10px 24px rgba(244, 40, 157, 0.35);
         }
 
         .btn-brand:hover {
@@ -77,14 +78,22 @@
             filter: brightness(1.05);
         }
 
-        .btn-outline-brand {
-            border: 1px solid rgba(255, 255, 255, 0.6);
+        .btn-soft-light {
+            border: 1px solid rgba(255, 255, 255, 0.55);
             color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(2px);
         }
 
-        .btn-outline-brand:hover {
+        .btn-soft-light:hover {
             color: var(--brand-dark);
             background: #fff;
+        }
+
+        .cta-btn {
+            border-radius: 999px;
+            padding: .72rem 1.5rem;
+            font-weight: 600;
         }
 
         .contact-card {
@@ -124,7 +133,10 @@
                     <small class="text-muted">Tienda virtual al alcance de todos</small>
                 </div>
             </div>
-            <a href="{{ route('credit-applications.create') }}" class="btn btn-dark rounded-pill px-4">Solicitar crédito</a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('credit-applications.create') }}" class="btn btn-brand cta-btn"><i class="bi bi-wallet2 me-2"></i>Solicitar crédito</a>
+                <a href="{{ route('credit-portal.index') }}" class="btn btn-soft-light cta-btn text-dark border-secondary-subtle bg-white"><i class="bi bi-credit-card-2-front me-2"></i>Consultar y pagar</a>
+            </div>
         </div>
     </header>
 
@@ -137,8 +149,8 @@
                         <h2 class="display-5 fw-bold mb-3">Impulsamos tus compras con estilo, cercanía y confianza.</h2>
                         <p class="lead mb-4">En B&B Store reunimos productos de calidad y alternativas de financiación fáciles para que compres desde casa de forma segura, rápida y profesional.</p>
                         <div class="d-flex flex-wrap gap-3">
-                            <a href="{{ route('credit-applications.create') }}" class="btn btn-brand btn-lg rounded-pill px-4">Solicitar crédito</a>
-                            <a href="{{ route('credit-portal.index') }}" class="btn btn-outline-brand btn-lg rounded-pill px-4">Consultar y pagar</a>
+                            <a href="{{ route('credit-applications.create') }}" class="btn btn-brand cta-btn btn-lg"><i class="bi bi-wallet2 me-2"></i>Solicitar crédito</a>
+                            <a href="{{ route('credit-portal.index') }}" class="btn btn-soft-light cta-btn btn-lg"><i class="bi bi-credit-card-2-front me-2"></i>Consultar y pagar</a>
                         </div>
                     </div>
                     <div class="col-lg-5">
@@ -181,6 +193,7 @@
                     <small class="text-white-50">© {{ now()->year }} B&B Store. Todos los derechos reservados.</small>
                 </div>
             </div>
+            <a href="{{ route('credit-applications.create') }}" class="btn btn-dark rounded-pill px-4">Solicitar crédito</a>
         </div>
     </footer>
 </body>
