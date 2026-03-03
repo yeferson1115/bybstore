@@ -18,6 +18,58 @@
         body {
             background: linear-gradient(180deg, #f9fafb 0%, #ffffff 45%, #f3f4f6 100%);
             color: #1f2937;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .brand-gradient {
+            background: linear-gradient(115deg, var(--brand-orange), var(--brand-pink), var(--brand-purple), var(--brand-cyan));
+        }
+
+        .brand-card {
+            border: 0;
+            border-radius: 18px;
+            box-shadow: 0 14px 35px rgba(17, 24, 39, 0.12);
+            overflow: hidden;
+        }
+
+        .brand-card-header {
+            background: linear-gradient(120deg, var(--brand-orange), var(--brand-pink), var(--brand-purple));
+            color: #fff;
+        }
+
+        .btn-brand {
+            color: #fff;
+            border: 0;
+            background: linear-gradient(120deg, var(--brand-orange), var(--brand-pink), var(--brand-purple));
+        }
+
+        .btn-brand:hover {
+            color: #fff;
+            filter: brightness(1.05);
+        }
+
+        .btn-outline-brand {
+            border: 1px solid rgba(140, 61, 255, .45);
+            color: var(--brand-purple);
+            background: #fff;
+        }
+
+        .btn-outline-brand:hover {
+            color: #fff;
+            background: linear-gradient(120deg, var(--brand-orange), var(--brand-pink), var(--brand-purple));
+            border-color: transparent;
+        }
+
+        .surface-soft {
+            background: rgba(255,255,255,.9);
+            border: 1px solid rgba(17, 24, 39, 0.06);
+            border-radius: 14px;
         }
 
         .site-header {

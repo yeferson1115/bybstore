@@ -1,7 +1,13 @@
 <x-public-layout>
-    <div class="container py-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
+    <div class="container py-5">
+        <div class="brand-card mb-4">
+            <div class="brand-card-header p-4">
+                <h3 class="mb-1 fw-bold">Solicitud de crédito</h3>
+                <p class="mb-0 text-white-50">Completa el formulario para evaluar tu solicitud y recibir respuesta rápida.</p>
+            </div>
+        </div>
+        <div class="card brand-card">
+            <div class="card-header brand-card-header">
                 <h4 class="mb-0">Solicitud de crédito + autorización de descuento</h4>
             </div>
             <div class="card-body">
@@ -29,7 +35,7 @@
 
                 <div id="autosave-status" class="small text-muted mb-3"></div>
 
-                <div class="card border mb-4">
+                <div class="card surface-soft mb-4">
                     <div class="card-body">
                         <h5 class="mb-3">¿Ya habías iniciado una solicitud?</h5>
                         <form action="{{ route('credit-applications.resume') }}" method="POST" class="row g-3">
@@ -43,7 +49,7 @@
                                 <input class="form-control" name="phone_primary" value="{{ old('phone_primary') }}" required>
                             </div>
                             <div class="col-md-4 d-flex align-items-end">
-                                <button type="submit" class="btn btn-outline-primary w-100">Retomar solicitud</button>
+                                <button type="submit" class="btn btn-outline-brand w-100">Retomar solicitud</button>
                             </div>
                         </form>
                     </div>
@@ -190,8 +196,8 @@
                     @endif
 
                     <div class="mt-4 d-flex gap-2">
-                        <button class="btn btn-outline-primary" type="submit" name="action" value="draft">Guardar borrador</button>
-                        <button class="btn btn-primary" type="submit" name="action" value="submit">Enviar solicitud</button>
+                        <button class="btn btn-outline-brand" type="submit" name="action" value="draft">Guardar borrador</button>
+                        <button class="btn btn-brand" type="submit" name="action" value="submit">Enviar solicitud</button>
                         @if ($application?->pdf_path)
                             <a class="btn btn-success" href="{{ route('credit-applications.pdf', $application) }}">Descargar PDF</a>
                         @endif
