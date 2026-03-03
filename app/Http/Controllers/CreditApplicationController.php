@@ -63,6 +63,7 @@ class CreditApplicationController extends Controller
     {
         $action = $request->input('action', 'draft');
         $isSubmit = $action === 'submit';
+        $application = CreditApplication::where('public_token', (string) $request->input('token'))->first();
 
         $rules = [
             'token' => ['required', 'string'],
@@ -119,13 +120,16 @@ class CreditApplicationController extends Controller
                 $rules[$field][0] = 'required';
             }
 
-            $rules['signature_data'] = ['required', 'string'];
+            $hasStoredSignature = (bool) $application?->signature_path;
+            $rules['signature_data'] = $hasStoredSignature
+                ? ['nullable', 'string']
+                : ['required', 'string'];
         }
 
         $data = $request->validate($rules);
         $data = $this->syncAuthorizationFields($data);
 
-        $application = CreditApplication::firstOrNew([
+        $application = $application ?: CreditApplication::firstOrNew([
             'public_token' => $data['token'],
         ]);
 
@@ -177,6 +181,12 @@ class CreditApplicationController extends Controller
         }
 
         if ($isSubmit) {
+            if (! empty($data['remove_signature']) && empty($data['signature_data'])) {
+                return back()->withErrors([
+                    'signature_data' => 'Debes volver a firmar antes de enviar la solicitud.',
+                ])->withInput();
+            }
+
             if (! $application->phone_verified_at || $application->phone_verified_number !== $this->normalizePhone((string) $application->phone_primary)) {
                 return back()->withErrors([
                     'phone_verification' => 'Debes validar tu celular por código SMS antes de enviar la solicitud.',

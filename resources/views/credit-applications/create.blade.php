@@ -229,6 +229,7 @@
             const ctx = canvas.getContext('2d');
             let drawing = false;
             let autosaveTimer;
+            let hasSignatureStroke = false;
 
             const syncDiscountAuthorizationFields = () => {
                 const selectedOption = companySelect?.options?.[companySelect.selectedIndex];
@@ -281,12 +282,15 @@
                 const p = position(e);
                 ctx.lineTo(p.x, p.y);
                 ctx.stroke();
+                hasSignatureStroke = true;
                 e.preventDefault();
             };
 
             const end = () => {
                 drawing = false;
-                hiddenInput.value = canvas.toDataURL('image/png');
+                if (hasSignatureStroke) {
+                    hiddenInput.value = canvas.toDataURL('image/png');
+                }
                 if (removeSignatureInput) {
                     removeSignatureInput.value = '0';
                 }
@@ -303,6 +307,7 @@
             clearBtn.addEventListener('click', () => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 hiddenInput.value = '';
+                hasSignatureStroke = false;
                 if (removeSignatureInput) {
                     removeSignatureInput.value = '1';
                 }
@@ -366,7 +371,9 @@
             });
 
             form.addEventListener('submit', () => {
-                hiddenInput.value = canvas.toDataURL('image/png');
+                if (hasSignatureStroke) {
+                    hiddenInput.value = canvas.toDataURL('image/png');
+                }
                 if (removeSignatureInput && removeSignatureCheckbox?.checked) {
                     removeSignatureInput.value = '1';
                 }
