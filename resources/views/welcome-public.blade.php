@@ -198,7 +198,8 @@
                         <a href="#" class="social-link" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
                         <a href="#" class="social-link" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
                     </div>
-                    <small class="text-white-50">© {{ now()->year }} B&B Store. Todos los derechos reservados.</small>
+                    <small class="text-white-50 d-block">© {{ now()->year }} B&B Store. Todos los derechos reservados.</small>
+                    <small class="text-white-50">Powered by <a href="https://yefersonsossa.com/" target="_blank" rel="noopener noreferrer" class="text-white">yefersonsossa.com</a></small>
                 </div>
             </div>
         </div>
