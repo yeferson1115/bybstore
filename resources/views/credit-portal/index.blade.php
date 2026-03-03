@@ -1,26 +1,73 @@
 <x-public-layout>
-    <div class="container py-4">
+    <style>
+        .credit-portal-card {
+            border: 0;
+            border-radius: 1rem;
+            box-shadow: 0 14px 32px rgba(15, 23, 42, .08);
+        }
+
+        .pay-installment-btn {
+            width: auto;
+            min-height: 44px;
+        }
+
+        @media (max-width: 767.98px) {
+            .credit-portal-wrap {
+                padding-top: 1rem !important;
+                padding-bottom: 1rem !important;
+            }
+
+            .credit-portal-wrap h4 {
+                font-size: 1.15rem;
+            }
+
+            .credit-portal-wrap .card-body,
+            .credit-portal-wrap .card-header {
+                padding: 1rem;
+            }
+
+            .credit-summary {
+                text-align: left !important;
+                width: 100%;
+            }
+
+            .credit-portal-wrap .btn,
+            .credit-portal-wrap .form-control {
+                min-height: 44px;
+            }
+
+            .credit-portal-wrap .table {
+                font-size: .85rem;
+            }
+
+            .pay-installment-btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <div class="container py-4 credit-portal-wrap">
         @if (session('status'))
             <div class="alert alert-success">{{ session('status') }}</div>
         @endif
 
-        <div class="card mb-4">
+        <div class="card mb-4 credit-portal-card">
             <div class="card-body">
                 <h4 class="mb-3">Consultar y pagar crédito</h4>
                 <form method="GET" action="{{ route('credit-portal.index') }}" class="row g-3">
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <label class="form-label">Cédula</label>
                         <input class="form-control" name="document_number" value="{{ $documentNumber }}" required>
                     </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button class="btn btn-primary w-100">Consultar</button>
+                    <div class="col-12 col-md-3 d-flex align-items-end">
+                        <button class="btn btn-soft-brand w-100 fw-semibold">Consultar</button>
                     </div>
                 </form>
             </div>
         </div>
 
         @if ($documentNumber)
-            <div class="card mb-4">
+            <div class="card mb-4 credit-portal-card">
                 <div class="card-header"><h5 class="mb-0">Créditos aprobados</h5></div>
                 <div class="card-body">
                     @forelse ($applications as $application)
@@ -34,7 +81,7 @@
                                     <strong>Crédito #{{ $application->id }}</strong><br>
                                     Cliente: {{ $application->full_name }}
                                 </div>
-                                <div class="text-end">
+                                <div class="text-md-end credit-summary">
                                     Cuota: <strong>${{ number_format((float) $application->installment_value, 0, ',', '.') }}</strong><br>
                                     Pendientes: <strong>{{ $pendingInstallments }}</strong>
                                 </div>
@@ -44,7 +91,7 @@
                                     @csrf
                                     <input type="hidden" name="credit_application_id" value="{{ $application->id }}">
                                     <input type="hidden" name="document_number" value="{{ $documentNumber }}">
-                                    <button class="btn btn-success">Pagar próxima cuota con Wompi</button>
+                                    <button class="btn btn-success pay-installment-btn">Pagar próxima cuota con Wompi</button>
                                 </form>
                             @endif
                         </div>
@@ -54,7 +101,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card credit-portal-card">
                 <div class="card-header"><h5 class="mb-0">Historial de pagos</h5></div>
                 <div class="card-body table-responsive">
                     <table class="table table-sm align-middle">
@@ -81,7 +128,7 @@
                                             <form method="POST" action="{{ route('credit-portal.refresh', $payment) }}">
                                                 @csrf
                                                 <input type="hidden" name="document_number" value="{{ $documentNumber }}">
-                                                <button class="btn btn-sm btn-outline-primary">Consultar transacción</button>
+                                                <button class="btn btn-sm btn-outline-primary w-100">Consultar transacción</button>
                                             </form>
                                         @else
                                             <span class="text-muted">—</span>
