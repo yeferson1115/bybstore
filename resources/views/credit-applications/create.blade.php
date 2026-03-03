@@ -9,6 +9,14 @@
                     <div class="alert alert-success">{{ session('status') }}</div>
                 @endif
 
+
+                @if (session('phone_verification_code_preview'))
+                    <div class="alert alert-warning">
+                        <strong>Modo pruebas:</strong> código temporal para validar celular:
+                        <span class="badge bg-dark">{{ session('phone_verification_code_preview') }}</span>
+                    </div>
+                @endif
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul class="mb-0">

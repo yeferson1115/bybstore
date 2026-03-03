@@ -259,8 +259,14 @@ class CreditApplicationController extends Controller
         $application->phone_verified_number = null;
         $application->save();
 
-        return redirect()->route('credit-applications.create', ['token' => $application->public_token])
+        $response = redirect()->route('credit-applications.create', ['token' => $application->public_token])
             ->with('status', 'Te enviamos un código por SMS. Ingrésalo para validar tu celular.');
+
+        if (config('app.debug')) {
+            $response->with('phone_verification_code_preview', $code);
+        }
+
+        return $response;
     }
 
     public function verifyPhoneCode(Request $request): RedirectResponse
