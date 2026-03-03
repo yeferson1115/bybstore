@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -209,6 +210,7 @@ class PublicCreditPortalController extends Controller
 
     protected function persistTransaction(CreditPayment $payment, array $transaction): void
     {
+        $previousStatus = (string) $payment->status;
         $status = strtolower((string) ($transaction['status'] ?? 'pending'));
 
         $payment->update([
@@ -217,5 +219,22 @@ class PublicCreditPortalController extends Controller
             'wompi_response' => $transaction,
             'paid_at' => $status === 'approved' ? ($payment->paid_at ?? now()) : null,
         ]);
+
+        if ($status === 'approved' && $previousStatus !== 'approved') {
+            $this->sendAdminPaymentApprovedEmail($payment->fresh());
+        }
+    }
+
+    protected function sendAdminPaymentApprovedEmail(CreditPayment $payment): void
+    {
+        $recipients = collect(config('services.admin_notifications.emails', []))
+            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->values();
+
+        if ($recipients->isEmpty()) {
+            return;
+        }
+
+        Mail::to($recipients->all())->send(new \App\Mail\CreditPaymentApprovedAdminMail($payment));
     }
 }
