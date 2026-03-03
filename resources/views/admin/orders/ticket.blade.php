@@ -17,7 +17,7 @@
 <body>
 
 <div class="center">
-    <h3><img style="height: 70px;" src="{{ asset('imagenes/logo.png') }}"/> </h3>
+    <h3><img style="height: 70px;" src="{{ asset('imagenes/logo.jpg') }}"/> </h3>
     <div>Carrera 4 #2-17, La Plata, Huila</div>
     <div>NIT: 1081409072-3</div>
     <div>Teléfono: 321 982 8455</div>

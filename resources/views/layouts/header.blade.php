@@ -3,7 +3,7 @@
             <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4 ms-0">
               <a href="index.html" class="app-brand-link">
                 
-                <img style="height: 50px;" src="{{ asset('imagenes/logo.png') }}"/> 
+                <img style="height: 50px;" src="{{ asset('imagenes/logo.jpg') }}"/> 
               </a>
 
               <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
