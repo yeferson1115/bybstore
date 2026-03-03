@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminCreditPaymentController extends Controller
 {
+    private const AVAILABLE_STATUSES = ['pending', 'approved', 'declined', 'voided', 'error'];
+
     public function index(Request $request)
     {
         $query = CreditPayment::query()->with('creditApplication');
@@ -74,5 +76,25 @@ class AdminCreditPaymentController extends Controller
 
             fclose($handle);
         }, 'reporte-pagos-credito.csv', ['Content-Type' => 'text/csv']);
+    }
+
+    public function updateStatus(Request $request, CreditPayment $payment)
+    {
+        $data = $request->validate([
+            'status' => ['required', 'string', 'in:' . implode(',', self::AVAILABLE_STATUSES)],
+        ]);
+
+        $status = $data['status'];
+
+        $payment->update([
+            'status' => $status,
+            'paid_at' => $status === 'approved'
+                ? ($payment->paid_at ?? now())
+                : null,
+        ]);
+
+        return redirect()
+            ->route('admin.credit-payments.index', $request->query())
+            ->with('status', 'Estado de pago actualizado correctamente.');
     }
 }
