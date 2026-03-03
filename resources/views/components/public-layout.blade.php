@@ -145,9 +145,8 @@
                 </div>
                 <div class="col-md-4">
                     <h4 class="h6 fw-bold text-uppercase mb-3">Contacto</h4>
-                    <p class="mb-1"><i class="bi bi-geo-alt-fill me-2"></i>Calle 45 #12-34, Bogotá, Colombia</p>
-                    <p class="mb-1"><i class="bi bi-telephone-fill me-2"></i>Teléfono: (601) 456 7890</p>
-                    <p class="mb-0"><i class="bi bi-phone-fill me-2"></i>Celular / WhatsApp: +57 320 555 1122</p>
+                    <p class="mb-1"><i class="bi bi-geo-alt-fill me-2"></i>Carrera 59 bb # 40c - 50 Bello - Antioquia</p>
+                    <p class="mb-0"><i class="bi bi-phone-fill me-2"></i>Celular / WhatsApp: +57 3042933031</p>
                 </div>
                 <div class="col-md-4">
                     <h4 class="h6 fw-bold text-uppercase mb-3">Síguenos</h4>
