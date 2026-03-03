@@ -13,7 +13,7 @@
                 <div class="dashboard-icon mb-3">
                     <i class="fas fa-coins fa-3x text-primary"></i>
                 </div>
-                <h5 class="fw-bold text-secondary mb-1">Ventas del Día</h5>
+                <h5 class="fw-bold text-secondary mb-1">Pagos del Día</h5>
                 <h2 class="fw-bold text-dark mb-0">
                     ${{ number_format($salesToday, 2) }}
                 </h2>
@@ -28,7 +28,7 @@
                 <div class="dashboard-icon mb-3">
                     <i class="fas fa-chart-line fa-3x text-success"></i>
                 </div>
-                <h5 class="fw-bold text-secondary mb-1">Ventas del Mes</h5>
+                <h5 class="fw-bold text-secondary mb-1">Solicitudes del del Día</h5>
                 <h2 class="fw-bold text-dark mb-0">
                     ${{ number_format($salesMonth, 2) }}
                 </h2>
