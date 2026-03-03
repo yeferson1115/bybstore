@@ -303,9 +303,9 @@
                 scheduleAutosave();
             };
 
-            ['mousedown', 'touchstart'].forEach(evt => canvas.addEventListener(evt, start, { passive: false }));
-            ['mousemove', 'touchmove'].forEach(evt => canvas.addEventListener(evt, move, { passive: false }));
-            ['mouseup', 'mouseleave', 'touchend'].forEach(evt => canvas.addEventListener(evt, end));
+            ['mousedown', 'touchstart', 'pointerdown'].forEach(evt => canvas.addEventListener(evt, start, { passive: false }));
+            ['mousemove', 'touchmove', 'pointermove'].forEach(evt => canvas.addEventListener(evt, move, { passive: false }));
+            ['mouseup', 'mouseleave', 'touchend', 'pointerup', 'pointerleave'].forEach(evt => canvas.addEventListener(evt, end));
 
             clearBtn.addEventListener('click', () => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);

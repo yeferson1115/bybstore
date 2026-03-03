@@ -173,9 +173,14 @@ class CreditApplicationController extends Controller
         }
 
         if (! empty($data['signature_data'])) {
+            $previousSignaturePath = $application->signature_path;
             $signaturePath = $this->saveSignature($data['signature_data'], $basePath);
+
             if ($signaturePath !== null) {
-                $this->deletePublicFile($application->signature_path);
+                if ($previousSignaturePath && $previousSignaturePath !== $signaturePath) {
+                    $this->deletePublicFile($previousSignaturePath);
+                }
+
                 $application->signature_path = $signaturePath;
             }
         }
