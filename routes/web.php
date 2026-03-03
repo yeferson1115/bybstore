@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('admin/credit-applications/{creditApplication}/status', [AdminCreditApplicationController::class, 'updateStatus'])->name('admin.credit-applications.update-status');
     Route::get('admin/credit-payments', [AdminCreditPaymentController::class, 'index'])->name('admin.credit-payments.index');
     Route::get('admin/credit-payments/export', [AdminCreditPaymentController::class, 'export'])->name('admin.credit-payments.export');
+    Route::patch('admin/credit-payments/{payment}/status', [AdminCreditPaymentController::class, 'updateStatus'])->name('admin.credit-payments.update-status');
 
 });
 
