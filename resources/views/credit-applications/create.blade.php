@@ -272,6 +272,9 @@
                 const p = position(e);
                 ctx.beginPath();
                 ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+                hasSignatureStroke = true;
                 e.preventDefault();
             };
 
