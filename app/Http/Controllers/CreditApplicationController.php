@@ -136,7 +136,7 @@ class CreditApplicationController extends Controller
         $application->fill($data);
         $application->status = $isSubmit ? 'submitted' : 'draft';
 
-        if (($data['phone_primary'] ?? null) && $application->phone_verified_number !== $this->normalizePhone($data['phone_primary'])) {
+        if (($data['phone_primary'] ?? null) && $application->phone_verified_at && $application->phone_verified_number !== $this->normalizePhone($data['phone_primary'])) {
             $application->phone_verified_at = null;
             $application->phone_verified_number = null;
             $application->phone_verification_code_hash = null;
@@ -331,11 +331,12 @@ class CreditApplicationController extends Controller
 
     private function saveSignature(string $signatureData, string $basePath): ?string
     {
-        if (! str_starts_with($signatureData, 'data:image/png;base64,')) {
+        if (! str_contains($signatureData, 'base64,')) {
             return null;
         }
 
-        $rawData = substr($signatureData, strpos($signatureData, ',') + 1);
+        $rawData = substr($signatureData, strpos($signatureData, 'base64,') + 7);
+        $rawData = preg_replace('/\s+/', '', $rawData) ?? '';
         $decoded = base64_decode($rawData, true);
 
         if ($decoded === false) {
@@ -457,7 +458,7 @@ class CreditApplicationController extends Controller
         $application->fill($data);
         $application->status = $application->status ?: 'draft';
 
-        if (($data['phone_primary'] ?? null) && $application->phone_verified_number !== $this->normalizePhone((string) $data['phone_primary'])) {
+        if (($data['phone_primary'] ?? null) && $application->phone_verified_at && $application->phone_verified_number !== $this->normalizePhone((string) $data['phone_primary'])) {
             $application->phone_verified_at = null;
             $application->phone_verified_number = null;
             $application->phone_verification_code_hash = null;
