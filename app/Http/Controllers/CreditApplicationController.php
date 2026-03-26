@@ -263,9 +263,9 @@ class CreditApplicationController extends Controller
         $sent = $this->sendSms($phone, $message);
 
         if (! $sent) {
-            return back()->withErrors([
+            /*return back()->withErrors([
                 'phone_verification' => 'No pudimos enviar el SMS en este momento. Intenta de nuevo.',
-            ])->withInput();
+            ])->withInput();*/
         }
 
         $application->phone_verification_code_hash = Hash::make($code);
