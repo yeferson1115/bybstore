@@ -75,15 +75,15 @@
         </tr>
         <tr>
             <td colspan="4" class="center">FIRMA DEL EMPLEADO</td>
-            <td colspan="4" class="center">FIRMA</td>
+            <td colspan="4" class="center">ASESOR COMERCIAL</td>
         </tr>
         <tr>
-            <td colspan="4">{{ $application->full_name }}</td>
-            <td colspan="4" class="signature-box center">
+            <td colspan="4" class="signature-box center h80">
                 @if ($application->signature_path)
-                    <img src="{{ public_path($application->signature_path) }}" alt="Firma">
+                    <img src="{{ public_path($application->signature_path) }}" alt="Firma empleado">
                 @endif
             </td>
+            <td colspan="4" class="center">Santiago Muñoz Henao</td>
         </tr>
     </table>
 
@@ -136,18 +136,31 @@
         </tr>
         <tr>
             <td colspan="8" class="text-justify h64 center"><strong>
-                CONFIRMO QUE RECIBÍ A SATISFACCIÓN LOS PRODUCTOS ARRIBA DESCRITOS.
+                CONFIRMO QUE RECIBÍ A SATISFACCIÓN LOS PRODUCTOS ARRIBA DESCRITOS, FUERON TESTEADOS Y ESTÁN EN BUEN FUNCIONAMIENTO Y EXCELENTES CONDICIONES ESTÉTICAS, ME INFORMARON SOBRE EL PERÍODO Y CONDICIONES DE GARANTÍA Y CANALES DE ATENCIÓN DE B&B STORE S.A.S.
             </strong></td>
         </tr>
         <tr>
-            <td class="label" colspan="2">RECIBI A SATISFACCION</td>
-            <td colspan="6"></td>
+            <td class="label center" colspan="2">OBSERVACIONES DEL CLIENTE</td>
+            <td colspan="6" class="h44">{{ $application->observations }}</td>
         </tr>
         <tr>
-            <td class="label" colspan="2">FIRMA</td>
-            <td colspan="2"></td>
-            <td class="label" colspan="2">ENTREGADO POR</td>
-            <td colspan="2">Santiago Muñoz Henao</td>
+            <td class="label center" colspan="4">RECIBI A SATISFACCION</td>
+            <td colspan="4" rowspan="2"></td>
+        </tr>
+        <tr>
+            <td colspan="4" class="signature-box center h80">
+                @if ($application->signature_path)
+                    <img src="{{ public_path($application->signature_path) }}" alt="Firma recibido">
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <td class="label center" colspan="4">FIRMA</td>
+            <td class="label center" colspan="4">ENTREGADO POR</td>
+        </tr>
+        <tr>
+            <td colspan="4">{{ $application->full_name }}</td>
+            <td colspan="4" class="center">Santiago Muñoz Henao</td>
         </tr>
         <tr>
             <td class="label" colspan="2">DOCUMENTO DE IDENTIDAD</td>
