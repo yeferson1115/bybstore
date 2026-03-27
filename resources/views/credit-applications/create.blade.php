@@ -209,7 +209,7 @@
                                     ⚠️ Debes leer y aceptar los términos y condiciones para enviar la solicitud.
                                 @endif
                             </div>
-                            <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#termsModal">
+                            <button type="button" class="btn btn-outline-dark btn-sm" id="open-terms-modal-btn" data-bs-toggle="modal" data-bs-target="#termsModal">
                                 Ver PDF y aceptar
                             </button>
                         </div>
@@ -268,9 +268,12 @@
             const termsModalElement = document.getElementById('termsModal');
             const termsAcceptCheckbox = document.getElementById('terms_accept_checkbox');
             const confirmTermsButton = document.getElementById('confirm-terms-btn');
+            const openTermsModalButton = document.getElementById('open-terms-modal-btn');
             const termsStatusAlert = document.getElementById('terms-status-alert');
             const termsStatusText = document.getElementById('terms-status-text');
-            const termsModal = termsModalElement ? new bootstrap.Modal(termsModalElement) : null;
+            const hasBootstrapModal = typeof window.bootstrap !== 'undefined' && typeof window.bootstrap.Modal !== 'undefined';
+            const hasJQueryModal = typeof window.$ !== 'undefined' && typeof window.$.fn?.modal === 'function';
+            const termsModal = hasBootstrapModal && termsModalElement ? new window.bootstrap.Modal(termsModalElement) : null;
             const clearBtn = document.getElementById('clear-signature');
             const form = document.getElementById('credit-form');
             const formActionUrl = form?.getAttribute('action') || window.location.href;
@@ -320,6 +323,40 @@
                 termsStatusText.textContent = accepted
                     ? '✅ Términos aceptados correctamente.'
                     : '⚠️ Debes leer y aceptar los términos y condiciones para enviar la solicitud.';
+            };
+
+            const openTermsModal = () => {
+                if (termsModal) {
+                    termsModal.show();
+                    return;
+                }
+
+                if (hasJQueryModal) {
+                    window.$(termsModalElement).modal('show');
+                    return;
+                }
+
+                termsModalElement?.classList.add('show');
+                termsModalElement?.style.setProperty('display', 'block');
+                termsModalElement?.setAttribute('aria-modal', 'true');
+                termsModalElement?.removeAttribute('aria-hidden');
+            };
+
+            const closeTermsModal = () => {
+                if (termsModal) {
+                    termsModal.hide();
+                    return;
+                }
+
+                if (hasJQueryModal) {
+                    window.$(termsModalElement).modal('hide');
+                    return;
+                }
+
+                termsModalElement?.classList.remove('show');
+                termsModalElement?.style.setProperty('display', 'none');
+                termsModalElement?.setAttribute('aria-hidden', 'true');
+                termsModalElement?.removeAttribute('aria-modal');
             };
 
             ctx.lineWidth = 2;
@@ -390,7 +427,23 @@
                 termsAcceptedInput.value = accepted ? '1' : '0';
                 updateTermsStatus();
                 scheduleAutosave();
-                termsModal?.hide();
+                closeTermsModal();
+            });
+
+            openTermsModalButton?.addEventListener('click', (event) => {
+                if (!hasBootstrapModal && !hasJQueryModal) {
+                    event.preventDefault();
+                    openTermsModal();
+                }
+            });
+
+            termsModalElement?.querySelectorAll('[data-bs-dismiss="modal"]').forEach((button) => {
+                button.addEventListener('click', (event) => {
+                    if (!hasBootstrapModal && !hasJQueryModal) {
+                        event.preventDefault();
+                        closeTermsModal();
+                    }
+                });
             });
 
             const autosave = async () => {
@@ -460,7 +513,7 @@
                 if (submitAction === 'submit' && termsAcceptedInput?.value !== '1') {
                     event.preventDefault();
                     termsAcceptCheckbox.checked = false;
-                    termsModal?.show();
+                    openTermsModal();
                     alert('Debes aceptar los términos y condiciones para enviar la solicitud.');
                     return;
                 }
