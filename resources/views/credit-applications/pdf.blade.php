@@ -200,8 +200,12 @@
             <td colspan="4">$</td>
         </tr>
         <tr>
-            <td colspan="4" class="h88"></td>
-            <td class="label" colspan="4">VENDEDOR</td>
+            <td colspan="4" class="h88 signature-box center">
+                @if ($application->signature_path)
+                    <img src="{{ public_path($application->signature_path) }}" alt="Firma empleado">
+                @endif
+            </td>
+            <td class="label" colspan="4">ASESOR COMERCIAL</td>
         </tr>
         <tr>
             <td colspan="4" class="label center">FIRMA DEL EMPLEADO</td>
@@ -220,11 +224,7 @@
         </tr>
         <tr>
             <td colspan="4">{{ $application->full_name }}</td>
-            <td colspan="4" class="signature-box center">
-                @if ($application->signature_path)
-                    <img src="{{ public_path($application->signature_path) }}" alt="Firma">
-                @endif
-            </td>
+            <td colspan="4"></td>
         </tr>
     </table>
 </body>
