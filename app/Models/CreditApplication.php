@@ -54,6 +54,7 @@ class CreditApplication extends Model
         'phone_verified_at',
         'phone_verified_number',
         'pdf_path',
+        'authorization_pdf_path',
         'terms_accepted_at',
         'submitted_at',
     ];

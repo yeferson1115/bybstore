@@ -219,7 +219,10 @@
                         <button class="btn btn-outline-brand" type="submit" name="action" value="draft">Guardar borrador</button>
                         <button class="btn btn-brand" type="submit" name="action" value="submit">Enviar solicitud</button>
                         @if ($application?->pdf_path)
-                            <a class="btn btn-success" href="{{ route('credit-applications.pdf', $application) }}">Descargar PDF</a>
+                            <a class="btn btn-success" href="{{ route('credit-applications.pdf', $application) }}">Descargar PDF solicitud</a>
+                            @if ($application?->authorization_pdf_path)
+                                <a class="btn btn-outline-success" href="{{ route('credit-applications.authorization-pdf', $application) }}">Descargar PDF autorización</a>
+                            @endif
                         @endif
                     </div>
                 </form>

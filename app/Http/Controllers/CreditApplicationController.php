@@ -232,7 +232,9 @@ class CreditApplicationController extends Controller
 
         if ($isSubmit) {
             $pdfPath = $this->generatePdf($application, $basePath);
+            $authorizationPdfPath = $this->generateAuthorizationPdf($application, $basePath);
             $application->pdf_path = $pdfPath;
+            $application->authorization_pdf_path = $authorizationPdfPath;
             $application->save();
 
             return redirect()
@@ -345,6 +347,15 @@ class CreditApplicationController extends Controller
         return response()->download($pdfAbsolutePath, "solicitud-{$creditApplication->id}.pdf");
     }
 
+    public function downloadAuthorizationPdf(CreditApplication $creditApplication)
+    {
+        $pdfAbsolutePath = $creditApplication->authorization_pdf_path ? public_path($creditApplication->authorization_pdf_path) : null;
+
+        abort_unless($pdfAbsolutePath && file_exists($pdfAbsolutePath), 404);
+
+        return response()->download($pdfAbsolutePath, "autorizacion-descuento-{$creditApplication->id}.pdf");
+    }
+
     private function saveSignature(string $signatureData, string $basePath): ?string
     {
         if (! str_contains($signatureData, 'base64,')) {
@@ -375,6 +386,21 @@ class CreditApplicationController extends Controller
         ])->setPaper('a4');
 
         $path = $basePath . '/solicitud.pdf';
+        $fullPath = public_path($path);
+        $this->ensurePublicDirectoryExists(dirname($fullPath));
+        file_put_contents($fullPath, $pdf->output());
+
+        return $path;
+    }
+
+
+    private function generateAuthorizationPdf(CreditApplication $application, string $basePath): string
+    {
+        $pdf = Pdf::loadView('credit-applications.authorization-pdf', [
+            'application' => $application,
+        ])->setPaper('a4');
+
+        $path = $basePath . '/autorizacion-descuento.pdf';
         $fullPath = public_path($path);
         $this->ensurePublicDirectoryExists(dirname($fullPath));
         file_put_contents($fullPath, $pdf->output());

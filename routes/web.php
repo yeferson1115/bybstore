@@ -32,6 +32,7 @@ Route::post('/solicitud-credito/retomar', [CreditApplicationController::class, '
 Route::post('/solicitud-credito/enviar-codigo', [CreditApplicationController::class, 'sendPhoneCode'])->name('credit-applications.send-phone-code');
 Route::post('/solicitud-credito/verificar-codigo', [CreditApplicationController::class, 'verifyPhoneCode'])->name('credit-applications.verify-phone-code');
 Route::get('/solicitud-credito/{creditApplication}/pdf', [CreditApplicationController::class, 'downloadPdf'])->name('credit-applications.pdf');
+Route::get('/solicitud-credito/{creditApplication}/pdf-autorizacion', [CreditApplicationController::class, 'downloadAuthorizationPdf'])->name('credit-applications.authorization-pdf');
 
 Route::middleware('auth')->group(function () {  
   Route::get('/dashboard', [DashboardController::class, 'index'])->name('index');
