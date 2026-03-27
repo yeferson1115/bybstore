@@ -394,6 +394,11 @@
             });
 
             const autosave = async () => {
+                if (!documentNumberInput?.value?.trim()) {
+                    autosaveStatus.textContent = 'El autoguardado se activará cuando ingreses el número de documento.';
+                    return;
+                }
+
                 const formData = new FormData(form);
                 formData.set('action', 'draft');
                 formData.delete('verification_code');
