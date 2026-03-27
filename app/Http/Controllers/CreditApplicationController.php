@@ -18,6 +18,25 @@ class CreditApplicationController extends Controller
 {
     private const PHONE_VERIFICATION_CODE_TTL_MINUTES = 10;
 
+    private const DOCUMENT_TYPES = [
+        'CC' => 'Cédula de ciudadanía',
+        'CE' => 'Cédula de extranjería',
+        'TI' => 'Tarjeta de identidad',
+        'NIT' => 'NIT',
+        'PAS' => 'Pasaporte',
+        'PPT' => 'Permiso por Protección Temporal (PPT)',
+        'PEP' => 'Permiso Especial de Permanencia (PEP)',
+    ];
+
+    private const CONTRACT_TYPES = [
+        'indefinido' => 'Término indefinido',
+        'fijo' => 'Término fijo',
+        'obra_labor' => 'Obra o labor',
+        'prestacion_servicios' => 'Prestación de servicios',
+        'aprendizaje' => 'Aprendizaje',
+        'temporal' => 'Temporal',
+    ];
+
     public function create(Request $request): View
     {
         $application = null;
@@ -30,6 +49,9 @@ class CreditApplicationController extends Controller
             'application' => $application,
             'companies' => Company::orderBy('name')->get(['id', 'name', 'nit']),
             'token' => $application?->public_token ?? (string) Str::uuid(),
+            'documentTypes' => self::DOCUMENT_TYPES,
+            'contractTypes' => self::CONTRACT_TYPES,
+            'todayDate' => now()->toDateString(),
         ]);
     }
 
@@ -69,7 +91,7 @@ class CreditApplicationController extends Controller
             'token' => ['required', 'string'],
             'request_date' => ['nullable', 'date'],
             'full_name' => ['nullable', 'string', 'max:255'],
-            'document_type' => ['nullable', 'string', 'max:50'],
+            'document_type' => ['nullable', Rule::in(array_keys(self::DOCUMENT_TYPES))],
             'document_number' => ['nullable', 'string', 'max:60'],
             'document_issue_date' => ['nullable', 'date'],
             'phone_primary' => ['nullable', 'string', 'max:30'],
@@ -81,7 +103,7 @@ class CreditApplicationController extends Controller
             'company_id' => ['nullable', 'integer', 'exists:companies,id'],
             'work_site' => ['nullable', 'string', 'max:120'],
             'hire_date' => ['nullable', 'date'],
-            'contract_type' => ['nullable', 'string', 'max:120'],
+            'contract_type' => ['nullable', Rule::in(array_keys(self::CONTRACT_TYPES))],
             'monthly_income' => ['nullable', 'numeric', 'min:0'],
             'requested_products' => ['nullable', 'string'],
             'net_value_without_interest' => ['nullable', 'numeric', 'min:0'],
@@ -129,6 +151,9 @@ class CreditApplicationController extends Controller
 
         $data = $request->validate($rules);
         $data = $this->syncAuthorizationFields($data);
+
+        $requestDate = $application?->request_date?->format('Y-m-d') ?? now()->toDateString();
+        $data['request_date'] = $requestDate;
 
         $application = $application ?: CreditApplication::firstOrNew([
             'public_token' => $data['token'],
