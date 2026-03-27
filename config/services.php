@@ -37,7 +37,8 @@ return [
 
     'hablame' => [
         'api_key' => env('HABLAME_API_KEY'),
-        'sender' => env('HABLAME_SENDER'),
+        'from' => env('HABLAME_FROM', '9409110331'),
+        'campaign_name' => env('HABLAME_CAMPAIGN_NAME', 'B&B STORE'),
     ],
 
 
