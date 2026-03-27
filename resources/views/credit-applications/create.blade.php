@@ -11,7 +11,7 @@
 
 
                 @if (session('phone_verification_code_preview'))
-                    <div class="alert alert-warning">
+                    <div class="alert alert-warning" style="display:none;">
                         <strong>Modo pruebas:</strong> código temporal para validar celular:
                         <span class="badge bg-dark">{{ session('phone_verification_code_preview') }}</span>
                     </div>
@@ -220,7 +220,7 @@
                                 @endif
                             </div>
                             <button type="button" class="btn btn-outline-dark btn-sm" id="open-terms-modal-btn" data-bs-toggle="modal" data-bs-target="#termsModal">
-                                Ver PDF y aceptar
+                                Ver y aceptar
                             </button>
                         </div>
                     </div>
