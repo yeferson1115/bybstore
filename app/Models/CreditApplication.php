@@ -54,6 +54,7 @@ class CreditApplication extends Model
         'phone_verified_at',
         'phone_verified_number',
         'pdf_path',
+        'terms_accepted_at',
         'submitted_at',
     ];
 
@@ -75,6 +76,7 @@ class CreditApplication extends Model
         'discount_authorization_date' => 'date',
         'phone_verification_expires_at' => 'datetime',
         'phone_verified_at' => 'datetime',
+        'terms_accepted_at' => 'datetime',
         'submitted_at' => 'datetime',
     ];
 }

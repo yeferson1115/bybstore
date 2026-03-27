@@ -61,6 +61,7 @@
                     <input type="hidden" name="token" value="{{ old('token', $token) }}">
                     <input type="hidden" name="signature_data" id="signature_data">
                     <input type="hidden" name="remove_signature" id="remove_signature" value="0">
+                    <input type="hidden" name="terms_accepted" id="terms_accepted" value="{{ old('terms_accepted', $application?->terms_accepted_at ? 1 : 0) }}">
 
                     <h5>Datos personales</h5>
                     <div class="row g-3">
@@ -197,6 +198,23 @@
                         </div>
                     @endif
 
+                    <hr>
+                    <h5>Términos y condiciones</h5>
+                    <div class="alert {{ $application?->terms_accepted_at ? 'alert-success' : 'alert-warning' }} mb-0" id="terms-status-alert">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                            <div id="terms-status-text">
+                                @if ($application?->terms_accepted_at)
+                                    ✅ Términos aceptados el {{ $application->terms_accepted_at->format('d/m/Y H:i') }}.
+                                @else
+                                    ⚠️ Debes leer y aceptar los términos y condiciones para enviar la solicitud.
+                                @endif
+                            </div>
+                            <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#termsModal">
+                                Ver PDF y aceptar
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="mt-4 d-flex gap-2">
                         <button class="btn btn-outline-brand" type="submit" name="action" value="draft">Guardar borrador</button>
                         <button class="btn btn-brand" type="submit" name="action" value="submit">Enviar solicitud</button>
@@ -209,12 +227,50 @@
         </div>
     </div>
 
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Términos y condiciones de crédito</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="ratio ratio-16x9 border rounded">
+                        <iframe
+                            src="{{ asset('docs/terminos-condiciones-credito.pdf') }}"
+                            title="Términos y condiciones"
+                            loading="lazy"
+                        ></iframe>
+                    </div>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="terms_accept_checkbox" @checked(old('terms_accepted', $application?->terms_accepted_at ? 1 : 0))>
+                        <label class="form-check-label" for="terms_accept_checkbox">
+                            Confirmo que leí el PDF y acepto los términos y condiciones.
+                        </label>
+                    </div>
+                    <small class="text-muted d-block mt-2">Sin esta aceptación no se puede enviar la solicitud.</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-brand" id="confirm-terms-btn">Guardar aceptación</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         (() => {
             const canvas = document.getElementById('signature-pad');
             const hiddenInput = document.getElementById('signature_data');
             const removeSignatureInput = document.getElementById('remove_signature');
             const removeSignatureCheckbox = document.getElementById('remove_signature_checkbox');
+            const termsAcceptedInput = document.getElementById('terms_accepted');
+            const termsModalElement = document.getElementById('termsModal');
+            const termsAcceptCheckbox = document.getElementById('terms_accept_checkbox');
+            const confirmTermsButton = document.getElementById('confirm-terms-btn');
+            const termsStatusAlert = document.getElementById('terms-status-alert');
+            const termsStatusText = document.getElementById('terms-status-text');
+            const termsModal = termsModalElement ? new bootstrap.Modal(termsModalElement) : null;
             const clearBtn = document.getElementById('clear-signature');
             const form = document.getElementById('credit-form');
             const formActionUrl = form?.getAttribute('action') || window.location.href;
@@ -251,6 +307,19 @@
                 if (employeeDocumentInput) {
                     employeeDocumentInput.value = documentNumberInput?.value || '';
                 }
+            };
+
+            const updateTermsStatus = () => {
+                const accepted = termsAcceptedInput?.value === '1';
+                if (!termsStatusAlert || !termsStatusText) {
+                    return;
+                }
+
+                termsStatusAlert.classList.remove('alert-success', 'alert-warning');
+                termsStatusAlert.classList.add(accepted ? 'alert-success' : 'alert-warning');
+                termsStatusText.textContent = accepted
+                    ? '✅ Términos aceptados correctamente.'
+                    : '⚠️ Debes leer y aceptar los términos y condiciones para enviar la solicitud.';
             };
 
             ctx.lineWidth = 2;
@@ -316,6 +385,14 @@
                 }
             });
 
+            confirmTermsButton?.addEventListener('click', () => {
+                const accepted = termsAcceptCheckbox?.checked;
+                termsAcceptedInput.value = accepted ? '1' : '0';
+                updateTermsStatus();
+                scheduleAutosave();
+                termsModal?.hide();
+            });
+
             const autosave = async () => {
                 const formData = new FormData(form);
                 formData.set('action', 'draft');
@@ -373,7 +450,16 @@
                 field.addEventListener('change', scheduleAutosave);
             });
 
-            form.addEventListener('submit', () => {
+            form.addEventListener('submit', (event) => {
+                const submitAction = event.submitter?.value;
+                if (submitAction === 'submit' && termsAcceptedInput?.value !== '1') {
+                    event.preventDefault();
+                    termsAcceptCheckbox.checked = false;
+                    termsModal?.show();
+                    alert('Debes aceptar los términos y condiciones para enviar la solicitud.');
+                    return;
+                }
+
                 if (hasSignatureStroke) {
                     hiddenInput.value = canvas.toDataURL('image/png');
                 }
@@ -381,6 +467,8 @@
                     removeSignatureInput.value = '1';
                 }
             });
+
+            updateTermsStatus();
         })();
     </script>
 </x-public-layout>
