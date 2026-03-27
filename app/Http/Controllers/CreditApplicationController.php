@@ -106,6 +106,7 @@ class CreditApplicationController extends Controller
             'remove_id_back' => ['nullable', 'boolean'],
             'remove_selfie_with_id' => ['nullable', 'boolean'],
             'remove_signature' => ['nullable', 'boolean'],
+            'terms_accepted' => ['nullable', 'boolean'],
         ];
 
         if ($isSubmit) {
@@ -185,6 +186,10 @@ class CreditApplicationController extends Controller
             }
         }
 
+        if (! empty($data['terms_accepted'])) {
+            $application->terms_accepted_at = $application->terms_accepted_at ?: now();
+        }
+
         if ($isSubmit) {
             if (! empty($data['remove_signature']) && empty($data['signature_data'])) {
                 return back()->withErrors([
@@ -207,6 +212,12 @@ class CreditApplicationController extends Controller
             if (! $application->signature_path) {
                 return back()->withErrors([
                     'signature_data' => 'La firma en pantalla es obligatoria para enviar la solicitud.',
+                ])->withInput();
+            }
+
+            if (! $application->terms_accepted_at) {
+                return back()->withErrors([
+                    'terms_accepted' => 'Debes leer y aceptar los términos y condiciones antes de enviar la solicitud.',
                 ])->withInput();
             }
 
