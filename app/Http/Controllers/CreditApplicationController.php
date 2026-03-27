@@ -271,7 +271,7 @@ class CreditApplicationController extends Controller
         $this->saveDraftSnapshot($application, $request->all());
 
         $code = (string) random_int(100000, 999999);
-        $message = "Tu código de verificación BYB Store es: {$code}. Vence en " . self::PHONE_VERIFICATION_CODE_TTL_MINUTES . ' minutos.';
+        $message = "Tu código de verificación es: {$code}. Vence en " . self::PHONE_VERIFICATION_CODE_TTL_MINUTES . ' minutos.';
 
         $sent = $this->sendSms($phone, $message);
 
@@ -460,20 +460,34 @@ class CreditApplicationController extends Controller
     private function sendSms(string $phone, string $message): bool
     {
         $apiKey = (string) config('services.hablame.api_key');
-        $sender = (string) config('services.hablame.sender');
+        $from = (string) config('services.hablame.from', '9409110331');
+        $campaignName = (string) config('services.hablame.campaign_name', 'B&B STORE');
 
-        if (! $apiKey || ! $sender) {
+        if (! $apiKey) {
             return false;
         }
 
-        $response = Http::asJson()
-            ->withToken($apiKey)
-            ->post('https://api103.hablame.co/api/sms/v3/send/marketing', [
-                'toNumber' => $phone,
-                'sms' => $message,
-                'flash' => false,
-                'sc' => $sender,
-                'request_dlvr_rcpt' => 0,
+        $formattedMessage = str_contains($message, 'B&B STORE')
+            ? $message
+            : "B&B STORE {$message}";
+
+        $response = Http::withHeaders([
+                'X-Hablame-Key' => $apiKey,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])
+            ->asJson()
+            ->post('https://www.hablame.co/api/sms/v5/send', [
+                'priority' => true,
+                'certificate' => false,
+                'sendDate' => 'Now',
+                'campaignName' => $campaignName,
+                'from' => $from,
+                'flash' => true,
+                'messages' => [[
+                    'to' => $phone,
+                    'text' => $formattedMessage,
+                ]],
             ]);
 
         return $response->successful();
