@@ -273,12 +273,11 @@ class CreditApplicationController extends Controller
         $code = (string) random_int(100000, 999999);
         $message = "Tu código de verificación es: {$code}. Vence en " . self::PHONE_VERIFICATION_CODE_TTL_MINUTES . ' minutos.';
 
-        $sent = $this->sendSms($phone, $message);
-
+        $sent = $this->sendSms($phone, $message);        
         if (! $sent) {
-            /*return back()->withErrors([
-                'phone_verification' => 'No pudimos enviar el SMS en este momento. Intenta de nuevo.',
-            ])->withInput();*/
+            return back()->withErrors([
+                'phone_verification' => 'No pudimos enviar el SMS en este momento. Intenta de nuevo.'.$sent,
+            ])->withInput();
         }
 
         $application->phone_verification_code_hash = Hash::make($code);
@@ -459,20 +458,24 @@ class CreditApplicationController extends Controller
 
     private function sendSms(string $phone, string $message): bool
     {
-        $apiKey = (string) config('services.hablame.api_key');
+        $apiKey = (string) config('services.hablame.api_key','nz0TYateQDVO3ITaMX6FzA5HSJNfhJiWGLm3QDdO9Zz26weZxAxwbdWmJ41Ba6q790Bh4tHnrrNyvDUj8GNdMEUAuRoK0CWgq7sEkbcGTqlRjtnwguMmQPjo3K1gp9kX');
         $from = (string) config('services.hablame.from', '9409110331');
         $campaignName = (string) config('services.hablame.campaign_name', 'B&B STORE');
-
-        if (! $apiKey) {
+        
+        /*if (! $apiKey) {
             return false;
-        }
+        }*/
+       
 
         $formattedMessage = str_contains($message, 'B&B STORE')
             ? $message
             : "B&B STORE {$message}";
 
-        $response = Http::withHeaders([
-                'X-Hablame-Key' => $apiKey,
+        $response = Http::withOptions([
+                'verify' => false
+            ])
+            ->withHeaders([
+                'X-Hablame-Key' => 'nz0TYateQDVO3ITaMX6FzA5HSJNfhJiWGLm3QDdO9Zz26weZxAxwbdWmJ41Ba6q790Bh4tHnrrNyvDUj8GNdMEUAuRoK0CWgq7sEkbcGTqlRjtnwguMmQPjo3K1gp9kX',
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ])
@@ -489,6 +492,7 @@ class CreditApplicationController extends Controller
                     'text' => $formattedMessage,
                 ]],
             ]);
+            
 
         return $response->successful();
     }
