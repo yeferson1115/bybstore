@@ -65,9 +65,14 @@
 
                     <h5>Datos personales</h5>
                     <div class="row g-3">
-                        <div class="col-md-4"><label class="form-label">Fecha solicitud</label><input type="date" class="form-control" name="request_date" value="{{ old('request_date', optional($application?->request_date)->format('Y-m-d')) }}"></div>
+                        <div class="col-md-4"><label class="form-label">Fecha solicitud</label><input type="date" class="form-control" name="request_date" value="{{ $application?->request_date?->format('Y-m-d') ?? $todayDate }}" readonly></div>
                         <div class="col-md-8"><label class="form-label">Nombres y apellidos</label><input class="form-control" id="full_name" name="full_name" value="{{ old('full_name', $application?->full_name) }}"></div>
-                        <div class="col-md-3"><label class="form-label">Tipo documento</label><input class="form-control" name="document_type" value="{{ old('document_type', $application?->document_type) }}"></div>
+                        <div class="col-md-3"><label class="form-label">Tipo documento</label><select class="form-control" name="document_type">
+                                <option value="">Selecciona</option>
+                                @foreach ($documentTypes as $key => $label)
+                                    <option value="{{ $key }}" @selected(old('document_type', $application?->document_type) === $key)>{{ $label }}</option>
+                                @endforeach
+                            </select></div>
                         <div class="col-md-3"><label class="form-label">Número documento</label><input class="form-control" id="document_number" name="document_number" value="{{ old('document_number', $application?->document_number) }}"></div>
                         <div class="col-md-3"><label class="form-label">Celular 1</label><input class="form-control" name="phone_primary" value="{{ old('phone_primary', $application?->phone_primary) }}"></div>
                         <div class="col-md-3"><label class="form-label">Celular 2</label><input class="form-control" name="phone_secondary" value="{{ old('phone_secondary', $application?->phone_secondary) }}"></div>
@@ -110,7 +115,12 @@
                             </select>
                         </div>
                         <div class="col-md-6"><label class="form-label">Sede</label><input class="form-control" name="work_site" value="{{ old('work_site', $application?->work_site) }}"></div>
-                        <div class="col-md-4"><label class="form-label">Tipo contrato</label><input class="form-control" name="contract_type" value="{{ old('contract_type', $application?->contract_type) }}"></div>
+                        <div class="col-md-4"><label class="form-label">Tipo contrato</label><select class="form-control" name="contract_type">
+                                <option value="">Selecciona</option>
+                                @foreach ($contractTypes as $key => $label)
+                                    <option value="{{ $key }}" @selected(old('contract_type', $application?->contract_type) === $key)>{{ $label }}</option>
+                                @endforeach
+                            </select></div>
                         <div class="col-md-4"><label class="form-label">Ingresos mensuales</label><input type="number" step="0.01" class="form-control" name="monthly_income" value="{{ old('monthly_income', $application?->monthly_income) }}"></div>
                         <div class="col-md-4"><label class="form-label">Fecha ingreso</label><input type="date" class="form-control" name="hire_date" value="{{ old('hire_date', optional($application?->hire_date)->format('Y-m-d')) }}"></div>
                         <div class="col-md-12"><label class="form-label">Productos solicitados</label><textarea class="form-control" name="requested_products" rows="2">{{ old('requested_products', $application?->requested_products) }}</textarea></div>
