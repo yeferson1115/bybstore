@@ -122,7 +122,10 @@
                     <div class="col-md-4">
                         <h6>PDF</h6>
                         @if ($application->pdf_path)
-                            <a href="{{ route('credit-applications.pdf', $application) }}" target="_blank" class="btn btn-outline-success btn-sm">Descargar PDF</a>
+                            <a href="{{ route('credit-applications.pdf', $application) }}" target="_blank" class="btn btn-outline-success btn-sm">Descargar PDF solicitud</a>
+                            @if ($application->authorization_pdf_path)
+                                <a href="{{ route('credit-applications.authorization-pdf', $application) }}" target="_blank" class="btn btn-outline-primary btn-sm">Descargar PDF autorización</a>
+                            @endif
                         @else
                             <p class="text-muted mb-0">No generado.</p>
                         @endif
