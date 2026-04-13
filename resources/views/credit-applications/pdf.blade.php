@@ -27,6 +27,11 @@
     </style>
 </head>
 <body>
+    @php
+        $commercialName = trim(($application->commercialUser->name ?? '') . ' ' . ($application->commercialUser->last_name ?? ''));
+        $commercialContact = $application->commercialUser->contact ?? $application->commercialUser->phone ?? '';
+        $commercialSignaturePath = $application->commercialUser->signature_path ?? null;
+    @endphp
     <table>
         <tr class="header-main h44">
             <td style="width: 60%;" class="center">SOLICITUD DE CREDITO</td>
@@ -205,18 +210,22 @@
                     <img src="{{ public_path($application->signature_path) }}" alt="Firma empleado">
                 @endif
             </td>
-            <td class="label" colspan="4">ASESOR COMERCIAL</td>
+            <td colspan="4" class="h88 signature-box center">
+                @if ($commercialSignaturePath)
+                    <img src="{{ public_path($commercialSignaturePath) }}" alt="Firma asesor comercial">
+                @endif
+            </td>
         </tr>
         <tr>
             <td colspan="4" class="label center">FIRMA DEL EMPLEADO</td>
-            <td colspan="4" class="center">Santiago Muñoz Henao</td>
+            <td colspan="4" class="label center">ASESOR COMERCIAL</td>
         </tr>
         <tr>
             <td class="label" colspan="2">DOCUMENTO DE IDENTIDAD</td>
             <td class="small-label">TIPO</td>
             <td>{{ $application->document_type }}</td>
             <td class="label" colspan="2">CONTACTO</td>
-            <td colspan="2">3103653021</td>
+            <td colspan="2">{{ $commercialContact }}</td>
         </tr>
         <tr>
             <td class="center" colspan="4">NOMBRE COMPLETO</td>
@@ -224,7 +233,7 @@
         </tr>
         <tr>
             <td colspan="4">{{ $application->full_name }}</td>
-            <td colspan="4"></td>
+            <td colspan="4">{{ $commercialName }}</td>
         </tr>
     </table>
 </body>

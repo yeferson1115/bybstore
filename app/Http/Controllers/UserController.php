@@ -9,6 +9,8 @@ use App\Http\Requests\UpdateUser;
 use App\Models\Log\LogSistema;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 
 class UserController extends Controller
@@ -53,7 +55,9 @@ public function store(Request $request)
         'last_name' => 'required|string|max:255',        
         'email'     => 'required|email|unique:users,email',
         'password'  => 'required|string|min:8|confirmed',            
-        'phone'  => 'nullable|string'
+        'phone'  => 'nullable|string|max:50',
+        'contact' => 'nullable|string|max:255',
+        'signature' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
     ]);
 
     // Crear el usuario
@@ -64,10 +68,16 @@ public function store(Request $request)
     $user->password  = Hash::make($request->password);
     $user->gender    = $request->gender ?? null;   
     $user->phone    = $request->phone;
+    $user->contact  = $request->contact;
     
 
 
     $user->save();
+
+    if ($request->hasFile('signature')) {
+        $user->signature_path = $this->storeSignatureInPublic($request->file('signature'), $user->id);
+        $user->save();
+    }
 
     // Asignar rol si se seleccionó
     if ($request->has('role')) {
@@ -110,7 +120,9 @@ public function store(Request $request)
             'name' => 'required|string|max:255',            
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',            
-            'phone'  => 'nullable|string'
+            'phone'  => 'nullable|string|max:50',
+            'contact' => 'nullable|string|max:255',
+            'signature' => 'nullable|file|mimes:jpg,jpeg,png|max:2048'
             
         ]);
 
@@ -119,11 +131,18 @@ public function store(Request $request)
         $user->last_name = $request->last_name;        
         $user->email = $request->email;
         $user->phone = $request->phone;
+        $user->contact = $request->contact;
         $user->gender=$request->gender;
 
         if ($request->password) {
             $user->password = Hash::make($request->password);
         }
+
+        if ($request->hasFile('signature')) {
+            $this->deletePublicFile($user->signature_path);
+            $user->signature_path = $this->storeSignatureInPublic($request->file('signature'), $user->id);
+        }
+
         $user->save();
 
         if ($request->has('role')) {
@@ -134,6 +153,34 @@ public function store(Request $request)
         }
 
         return json_encode(['success' => true]);
+    }
+
+    private function storeSignatureInPublic(UploadedFile $file, int $userId): string
+    {
+        $directory = public_path('firmas-comerciales');
+
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'png');
+        $filename = 'user-' . $userId . '-' . Str::random(10) . '.' . $extension;
+        $file->move($directory, $filename);
+
+        return 'firmas-comerciales/' . $filename;
+    }
+
+    private function deletePublicFile(?string $relativePath): void
+    {
+        if (! $relativePath) {
+            return;
+        }
+
+        $fullPath = public_path($relativePath);
+
+        if (is_file($fullPath)) {
+            @unlink($fullPath);
+        }
     }
 
 

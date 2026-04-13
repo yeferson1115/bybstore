@@ -18,6 +18,8 @@ class User extends Authenticatable implements JWTSubject  // <- implementa la in
         'last_name',
         'email',
         'phone',
+        'contact',
+        'signature_path',
         'password',
         'gender'
     ];
