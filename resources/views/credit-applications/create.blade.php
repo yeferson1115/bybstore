@@ -18,7 +18,8 @@
                 @endif
 
                 @if ($errors->any())
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger shadow-sm rounded-3 border-0">
+                        <div class="fw-semibold mb-2">Por favor corrige los siguientes campos:</div>
                         <ul class="mb-0">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -114,6 +115,17 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Comercial que te atendió</label>
+                            <select class="form-control" name="commercial_user_id">
+                                <option value="">Selecciona un comercial</option>
+                                @foreach ($commercialUsers as $commercialUser)
+                                    <option value="{{ $commercialUser->id }}" @selected((string) old('commercial_user_id', $application?->commercial_user_id) === (string) $commercialUser->id)>
+                                        {{ trim($commercialUser->name . ' ' . $commercialUser->last_name) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="col-md-6"><label class="form-label">Sede</label><input class="form-control" name="work_site" value="{{ old('work_site', $application?->work_site) }}"></div>
                         <div class="col-md-4"><label class="form-label">Tipo contrato</label><select class="form-control" name="contract_type">
                                 <option value="">Selecciona</option>
@@ -125,7 +137,7 @@
                         <div class="col-md-4"><label class="form-label">Fecha ingreso</label><input type="date" class="form-control" name="hire_date" value="{{ old('hire_date', optional($application?->hire_date)->format('Y-m-d')) }}"></div>
                         <div class="col-md-12"><label class="form-label">Productos solicitados</label><textarea class="form-control" name="requested_products" rows="2">{{ old('requested_products', $application?->requested_products) }}</textarea></div>
                         <div class="col-md-4"><label class="form-label">Valor neto sin interés</label><input type="number" step="0.01" class="form-control" name="net_value_without_interest" value="{{ old('net_value_without_interest', $application?->net_value_without_interest) }}"></div>
-                        <div class="col-md-4"><label class="form-label">Valor cuota</label><input type="number" step="0.01" class="form-control" name="installment_value" value="{{ old('installment_value', $application?->installment_value) }}"></div>
+                        <div class="col-md-4"><label class="form-label">Valor cuota</label><input type="number" step="0.01" class="form-control" name="installment_value" value="{{ old('installment_value', $application?->installment_value) }}" readonly></div>
                         <div class="col-md-4"><label class="form-label">Número de cuotas</label><input type="number" class="form-control" name="installments_count" value="{{ old('installments_count', $application?->installments_count) }}"></div>
                         <div class="col-md-4"><label class="form-label">Frecuencia</label>
                             <select class="form-control" name="payment_frequency">
@@ -135,6 +147,7 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-4"><label class="form-label">Fecha primera cuota</label><input type="date" class="form-control" name="first_installment_date" value="{{ old('first_installment_date', optional($application?->first_installment_date)->format('Y-m-d')) }}"></div>
                         <div class="col-md-8"><label class="form-label">Observaciones</label><input class="form-control" name="observations" value="{{ old('observations', $application?->observations) }}"></div>
                     </div>
 
@@ -146,8 +159,8 @@
                         <div class="col-md-4"><label class="form-label">Nombre empleado</label><input class="form-control" id="employee_name" name="employee_name" value="{{ old('employee_name', $application?->employee_name) }}" readonly></div>
                         <div class="col-md-4"><label class="form-label">Documento</label><input class="form-control" id="employee_document" name="employee_document" value="{{ old('employee_document', $application?->employee_document) }}" readonly></div>
                         <div class="col-md-4"><label class="form-label">Cargo</label><input class="form-control" name="employee_position" value="{{ old('employee_position', $application?->employee_position) }}"></div>
-                        <div class="col-md-6"><label class="form-label">Descuento por</label><input class="form-control" name="discount_concept" value="{{ old('discount_concept', $application?->discount_concept) }}"></div>
-                        <div class="col-md-3"><label class="form-label">Valor total</label><input type="number" step="0.01" class="form-control" name="discount_total_value" value="{{ old('discount_total_value', $application?->discount_total_value) }}"></div>
+                        <div class="col-md-6"><label class="form-label">Descuento por</label><input class="form-control" name="discount_concept" value="{{ old('discount_concept', $application?->discount_concept) }}" readonly></div>
+                        <div class="col-md-3"><label class="form-label">Valor total</label><input type="number" step="0.01" class="form-control" name="discount_total_value" value="{{ old('discount_total_value', $application?->discount_total_value) }}" readonly></div>
                         <div class="col-md-3"><label class="form-label">Fecha</label><input type="date" class="form-control" name="discount_authorization_date" value="{{ old('discount_authorization_date', optional($application?->discount_authorization_date)->format('Y-m-d')) }}"></div>
                     </div>
 
@@ -298,6 +311,13 @@
             const employerNitInput = document.getElementById('employer_nit');
             const employeeNameInput = document.getElementById('employee_name');
             const employeeDocumentInput = document.getElementById('employee_document');
+            const requestedProductsInput = form.querySelector('[name="requested_products"]');
+            const discountConceptInput = form.querySelector('[name="discount_concept"]');
+            const netValueInput = form.querySelector('[name="net_value_without_interest"]');
+            const installmentValueInput = form.querySelector('[name="installment_value"]');
+            const installmentsCountInput = form.querySelector('[name="installments_count"]');
+            const paymentFrequencyInput = form.querySelector('[name="payment_frequency"]');
+            const totalValueInput = form.querySelector('[name="discount_total_value"]');
             const ctx = canvas.getContext('2d');
             let drawing = false;
             let autosaveTimer;
@@ -336,6 +356,43 @@
                 termsStatusText.textContent = accepted
                     ? '✅ Términos aceptados correctamente.'
                     : '⚠️ Debes leer y aceptar los términos y condiciones para enviar la solicitud.';
+            };
+
+            const showPrettyAlert = (message, type = 'danger') => {
+                const wrapper = document.createElement('div');
+                wrapper.className = `alert alert-${type} shadow-sm rounded-3 border-0`;
+                wrapper.textContent = message;
+                form.prepend(wrapper);
+                setTimeout(() => wrapper.remove(), 6000);
+            };
+
+            const calculateCreditValues = () => {
+                const vp = parseFloat(netValueInput?.value || '0');
+                const n = parseInt(installmentsCountInput?.value || '0', 10);
+                const i = 0.022;
+
+                if (!Number.isFinite(vp) || !Number.isFinite(n) || vp <= 0 || n <= 0) {
+                    if (totalValueInput) totalValueInput.value = '';
+                    if (installmentValueInput) installmentValueInput.value = '';
+                    return;
+                }
+
+                const vf = vp * Math.pow(1 + i, n);
+                const mensual = vf / n;
+                const frequency = paymentFrequencyInput?.value;
+
+                let cuota = mensual;
+                if (frequency === 'biweekly') cuota = mensual / 2;
+                if (frequency === 'decadal') cuota = mensual / 3;
+
+                if (totalValueInput) totalValueInput.value = vf.toFixed(2);
+                if (installmentValueInput) installmentValueInput.value = cuota.toFixed(2);
+            };
+
+            const syncDiscountConcept = () => {
+                if (discountConceptInput) {
+                    discountConceptInput.value = requestedProductsInput?.value || '';
+                }
             };
 
             const openTermsModal = () => {
@@ -509,8 +566,18 @@
             });
             fullNameInput?.addEventListener('input', syncDiscountAuthorizationFields);
             documentNumberInput?.addEventListener('input', syncDiscountAuthorizationFields);
+            requestedProductsInput?.addEventListener('input', () => {
+                syncDiscountConcept();
+                scheduleAutosave();
+            });
+            [netValueInput, installmentsCountInput, paymentFrequencyInput].forEach((field) => {
+                field?.addEventListener('input', calculateCreditValues);
+                field?.addEventListener('change', calculateCreditValues);
+            });
 
             syncDiscountAuthorizationFields();
+            syncDiscountConcept();
+            calculateCreditValues();
 
             form.querySelectorAll('input, select, textarea').forEach((field) => {
                 if (field.name === 'verification_code') {
@@ -527,7 +594,7 @@
                     event.preventDefault();
                     termsAcceptCheckbox.checked = false;
                     openTermsModal();
-                    alert('Debes aceptar los términos y condiciones para enviar la solicitud.');
+                    showPrettyAlert('Debes aceptar los términos y condiciones para enviar la solicitud.', 'warning');
                     return;
                 }
 

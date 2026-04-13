@@ -26,6 +26,7 @@ class CreditApplication extends Model
         'neighborhood',
         'city',
         'company_id',
+        'commercial_user_id',
         'work_site',
         'hire_date',
         'contract_type',
@@ -62,6 +63,11 @@ class CreditApplication extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function commercialUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'commercial_user_id');
     }
 
     public function payments(): HasMany
