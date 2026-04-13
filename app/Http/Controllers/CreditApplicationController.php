@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\CreditApplication;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -48,6 +49,10 @@ class CreditApplicationController extends Controller
         return view('credit-applications.create', [
             'application' => $application,
             'companies' => Company::orderBy('name')->get(['id', 'name', 'nit']),
+            'commercialUsers' => User::query()
+                ->role('Comercial')
+                ->orderBy('name')
+                ->get(['id', 'name', 'last_name']),
             'token' => $application?->public_token ?? (string) Str::uuid(),
             'documentTypes' => self::DOCUMENT_TYPES,
             'contractTypes' => self::CONTRACT_TYPES,
@@ -101,6 +106,7 @@ class CreditApplicationController extends Controller
             'neighborhood' => ['nullable', 'string', 'max:120'],
             'city' => ['nullable', 'string', 'max:120'],
             'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+            'commercial_user_id' => ['nullable', 'integer', 'exists:users,id'],
             'work_site' => ['nullable', 'string', 'max:120'],
             'hire_date' => ['nullable', 'date'],
             'contract_type' => ['nullable', Rule::in(array_keys(self::CONTRACT_TYPES))],
@@ -134,8 +140,8 @@ class CreditApplicationController extends Controller
         if ($isSubmit) {
             $requiredFields = [
                 'request_date', 'full_name', 'document_type', 'document_number', 'phone_primary',
-                'email', 'residential_address', 'city', 'company_id', 'monthly_income',
-                'requested_products', 'installment_value', 'installments_count', 'payment_frequency',
+                'email', 'residential_address', 'city', 'company_id', 'commercial_user_id', 'monthly_income',
+                'requested_products', 'net_value_without_interest', 'installments_count', 'payment_frequency', 'first_installment_date',
                 'employer_name', 'employee_name',
             ];
 
@@ -149,8 +155,28 @@ class CreditApplicationController extends Controller
                 : ['required', 'string'];
         }
 
-        $data = $request->validate($rules);
+        $data = $request->validate(
+            $rules,
+            [
+                'required' => 'El campo :attribute es obligatorio.',
+                'email' => 'El campo :attribute debe ser un correo válido.',
+                'date' => 'El campo :attribute debe ser una fecha válida.',
+                'numeric' => 'El campo :attribute debe ser numérico.',
+                'integer' => 'El campo :attribute debe ser un número entero.',
+                'min' => 'El campo :attribute debe ser mayor o igual a :min.',
+                'exists' => 'El :attribute seleccionado no es válido.',
+                'in' => 'El valor de :attribute no es válido.',
+            ],
+            [
+                'city' => 'ciudad',
+                'commercial_user_id' => 'comercial que te atendió',
+                'first_installment_date' => 'fecha de primera cuota',
+                'installment_value' => 'valor cuota',
+                'discount_total_value' => 'valor total',
+            ]
+        );
         $data = $this->syncAuthorizationFields($data);
+        $data = $this->calculateCreditValues($data);
 
         $requestDate = $application?->request_date?->format('Y-m-d') ?? now()->toDateString();
         $data['request_date'] = $requestDate;
@@ -272,6 +298,33 @@ class CreditApplicationController extends Controller
             ->route('credit-applications.create', ['token' => $application->public_token])
             ->with('status', 'Borrador guardado correctamente.')
             ->with('resume_url', route('credit-applications.create', ['token' => $application->public_token]));
+    }
+
+    private function calculateCreditValues(array $data): array
+    {
+        $netValue = (float) ($data['net_value_without_interest'] ?? 0);
+        $installments = (int) ($data['installments_count'] ?? 0);
+        $frequency = $data['payment_frequency'] ?? null;
+        $monthlyInstallment = 0.0;
+
+        if ($netValue > 0 && $installments > 0) {
+            $futureValue = $netValue * ((1 + 0.022) ** $installments);
+            $data['discount_total_value'] = round($futureValue, 2);
+
+            $monthlyInstallment = $futureValue / $installments;
+        }
+
+        $data['installment_value'] = match ($frequency) {
+            'biweekly' => round($monthlyInstallment / 2, 2),
+            'decadal' => round($monthlyInstallment / 3, 2),
+            default => round($monthlyInstallment, 2),
+        };
+
+        if (! empty($data['requested_products'])) {
+            $data['discount_concept'] = $data['requested_products'];
+        }
+
+        return $data;
     }
 
     public function sendPhoneCode(Request $request): RedirectResponse

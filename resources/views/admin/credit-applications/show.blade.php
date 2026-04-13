@@ -61,6 +61,7 @@
                             <li><strong>Dirección:</strong> {{ $application->residential_address ?: '—' }}</li>
                             <li><strong>Ciudad:</strong> {{ $application->city ?: '—' }}</li>
                             <li><strong>Empresa:</strong> {{ $application->company?->name ?: ($application->employer_name ?: '—') }}</li>
+                            <li><strong>Comercial:</strong> {{ $application->commercialUser ? trim($application->commercialUser->name . ' ' . $application->commercialUser->last_name) : '—' }}</li>
                         </ul>
                     </div>
                 </div>
@@ -76,6 +77,8 @@
                             <li><strong>Valor cuota:</strong> {{ $application->installment_value ? number_format($application->installment_value, 0, ',', '.') : '—' }}</li>
                             <li><strong>Número de cuotas:</strong> {{ $application->installments_count ?: '—' }}</li>
                             <li><strong>Frecuencia:</strong> {{ $application->payment_frequency ?: '—' }}</li>
+                            <li><strong>Fecha primera cuota:</strong> {{ optional($application->first_installment_date)->format('d/m/Y') ?: '—' }}</li>
+                            <li><strong>Valor total:</strong> {{ $application->discount_total_value ? number_format($application->discount_total_value, 0, ',', '.') : '—' }}</li>
                             <li><strong>Enviada:</strong> {{ optional($application->submitted_at)->format('d/m/Y H:i') ?: 'No enviada' }}</li>
                         </ul>
                     </div>
