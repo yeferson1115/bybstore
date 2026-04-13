@@ -55,6 +55,19 @@
                                        
                                     </div>
                                 </div>
+                                <div class="col-md-6 col-12 mt-2">
+                                    <div class="mb-1">
+                                        <label class="form-label" for="contact">Contacto comercial</label>
+                                        <input type="text" id="contact" name="contact" class="form-control" placeholder="Contacto comercial">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12 mt-2">
+                                    <div class="mb-1">
+                                        <label class="form-label" for="signature">Firma del vendedor</label>
+                                        <input type="file" id="signature" name="signature" class="form-control" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+                                        <small class="text-muted">Se guarda en la carpeta <code>public/firmas-comerciales</code>.</small>
+                                    </div>
+                                </div>
                                
 
                                 <div class="col-md-6 col-12">
@@ -184,4 +197,3 @@
     });
 </script>
 @endpush
-

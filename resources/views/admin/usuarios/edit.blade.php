@@ -25,7 +25,7 @@
                         <h4 class="card-title">Editar Usuario</h4>
                     </div>
                     <div class="card-body">
-                        <form class="form" role="form" id="main-form" autocomplete="off">
+                        <form class="form" role="form" id="main-form" autocomplete="off" enctype="multipart/form-data">
                             @method('PUT')
                             <input type="hidden" id="_url" value="{{ url('users',[$user->id]) }}">
                             <input type="hidden" id="_token" value="{{ csrf_token() }}">
@@ -63,6 +63,21 @@
                                         @enderror
                                     </div>
                                 </div>                                
+                                <div class="col-md-6 col-12 mt-2">
+                                    <div class="mb-1">
+                                        <label class="form-label" for="contact">Contacto comercial</label>
+                                        <input type="text" id="contact" name="contact" class="form-control" value="{{ $user->contact }}" placeholder="Contacto comercial">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12 mt-2">
+                                    <div class="mb-1">
+                                        <label class="form-label" for="signature">Firma del vendedor</label>
+                                        <input type="file" id="signature" name="signature" class="form-control" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+                                        @if ($user->signature_path)
+                                            <a href="{{ asset($user->signature_path) }}" target="_blank" class="small d-inline-block mt-1">Ver firma guardada</a>
+                                        @endif
+                                    </div>
+                                </div>
                                 <div class="col-md-6 col-12 mt-2">
                                     <div class="mb-1">
                                         <label class="form-label" for="city-column">Género</label>
