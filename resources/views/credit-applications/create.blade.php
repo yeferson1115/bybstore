@@ -67,20 +67,20 @@
                     <h5>Datos personales</h5>
                     <div class="row g-3">
                         <div class="col-md-4"><label class="form-label">Fecha solicitud</label><input type="date" class="form-control" name="request_date" value="{{ $application?->request_date?->format('Y-m-d') ?? $todayDate }}" readonly></div>
-                        <div class="col-md-8"><label class="form-label">Nombres y apellidos</label><input class="form-control" id="full_name" name="full_name" value="{{ old('full_name', $application?->full_name) }}"></div>
+                        <div class="col-md-8"><label class="form-label">Nombres y apellidos *</label><input class="form-control" id="full_name" name="full_name" value="{{ old('full_name', $application?->full_name) }}"></div>
                         <div class="col-md-3"><label class="form-label">Tipo documento</label><select class="form-control" name="document_type">
                                 <option value="">Selecciona</option>
                                 @foreach ($documentTypes as $key => $label)
                                     <option value="{{ $key }}" @selected(old('document_type', $application?->document_type) === $key)>{{ $label }}</option>
                                 @endforeach
                             </select></div>
-                        <div class="col-md-3"><label class="form-label">Número documento</label><input class="form-control" id="document_number" name="document_number" value="{{ old('document_number', $application?->document_number) }}"></div>
-                        <div class="col-md-3"><label class="form-label">Celular 1</label><input class="form-control" name="phone_primary" value="{{ old('phone_primary', $application?->phone_primary) }}"></div>
+                        <div class="col-md-3"><label class="form-label">Número documento *</label><input class="form-control" id="document_number" name="document_number" value="{{ old('document_number', $application?->document_number) }}"></div>
+                        <div class="col-md-3"><label class="form-label">Celular 1 *</label><input class="form-control" name="phone_primary" value="{{ old('phone_primary', $application?->phone_primary) }}"></div>
                         <div class="col-md-3"><label class="form-label">Celular 2</label><input class="form-control" name="phone_secondary" value="{{ old('phone_secondary', $application?->phone_secondary) }}"></div>
-                        <div class="col-md-6"><label class="form-label">Correo</label><input type="email" class="form-control" name="email" value="{{ old('email', $application?->email) }}"></div>
-                        <div class="col-md-6"><label class="form-label">Dirección residencia</label><input class="form-control" name="residential_address" value="{{ old('residential_address', $application?->residential_address) }}"></div>
+                        <div class="col-md-6"><label class="form-label">Correo *</label><input type="email" class="form-control" name="email" value="{{ old('email', $application?->email) }}"></div>
+                        <div class="col-md-6"><label class="form-label">Dirección residencia *</label><input class="form-control" name="residential_address" value="{{ old('residential_address', $application?->residential_address) }}"></div>
                         <div class="col-md-6"><label class="form-label">Barrio</label><input class="form-control" name="neighborhood" value="{{ old('neighborhood', $application?->neighborhood) }}"></div>
-                        <div class="col-md-6"><label class="form-label">Ciudad</label><input class="form-control" name="city" value="{{ old('city', $application?->city) }}"></div>
+                        <div class="col-md-6"><label class="form-label">Ciudad *</label><input class="form-control" name="city" value="{{ old('city', $application?->city) }}"></div>
                     </div>
 
                     <div class="alert {{ $application?->phone_verified_at ? 'alert-success' : 'alert-warning' }} mt-3 mb-0">
@@ -105,7 +105,7 @@
                     <hr>
                     <h5>Datos laborales y crédito</h5>
                     <div class="row g-3">
-                        <div class="col-md-6"><label class="form-label">Empresa donde labora</label>
+                        <div class="col-md-6"><label class="form-label">Empresa donde labora *</label>
                             <select class="form-control" id="company_id" name="company_id">
                                 <option value="">Selecciona una empresa</option>
                                 @foreach ($companies as $company)
@@ -116,7 +116,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Comercial que te atendió</label>
+                            <label class="form-label">Comercial que te atendió *</label>
                             <select class="form-control" name="commercial_user_id">
                                 <option value="">Selecciona un comercial</option>
                                 @foreach ($commercialUsers as $commercialUser)
@@ -136,8 +136,7 @@
                         <div class="col-md-4"><label class="form-label">Ingresos mensuales</label><input type="number" step="0.01" class="form-control" name="monthly_income" value="{{ old('monthly_income', $application?->monthly_income) }}"></div>
                         <div class="col-md-4"><label class="form-label">Fecha ingreso</label><input type="date" class="form-control" name="hire_date" value="{{ old('hire_date', optional($application?->hire_date)->format('Y-m-d')) }}"></div>
                         <div class="col-md-12"><label class="form-label">Productos solicitados</label><textarea class="form-control" name="requested_products" rows="2">{{ old('requested_products', $application?->requested_products) }}</textarea></div>
-                        <div class="col-md-4"><label class="form-label">Valor neto sin interés</label><input type="number" step="0.01" class="form-control" name="net_value_without_interest" value="{{ old('net_value_without_interest', $application?->net_value_without_interest) }}"></div>
-                        <div class="col-md-4"><label class="form-label">Valor cuota</label><input type="number" step="0.01" class="form-control" name="installment_value" value="{{ old('installment_value', $application?->installment_value) }}" readonly></div>
+                        <div class="col-md-4"><label class="form-label">Valor total</label><input type="number" step="0.01" class="form-control" name="net_value_without_interest" value="{{ old('net_value_without_interest', $application?->net_value_without_interest) }}"></div>
                         <div class="col-md-4"><label class="form-label">Número de cuotas</label><input type="number" class="form-control" name="installments_count" value="{{ old('installments_count', $application?->installments_count) }}"></div>
                         <div class="col-md-4"><label class="form-label">Frecuencia</label>
                             <select class="form-control" name="payment_frequency">
@@ -147,6 +146,7 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-4"><label class="form-label">Valor cuota</label><input type="number" step="0.01" class="form-control" name="installment_value" value="{{ old('installment_value', $application?->installment_value) }}" readonly></div>
                         <div class="col-md-4"><label class="form-label">Fecha primera cuota</label><input type="date" class="form-control" name="first_installment_date" value="{{ old('first_installment_date', optional($application?->first_installment_date)->format('Y-m-d')) }}"></div>
                         <div class="col-md-8"><label class="form-label">Observaciones</label><input class="form-control" name="observations" value="{{ old('observations', $application?->observations) }}"></div>
                     </div>
@@ -318,6 +318,16 @@
             const installmentsCountInput = form.querySelector('[name="installments_count"]');
             const paymentFrequencyInput = form.querySelector('[name="payment_frequency"]');
             const totalValueInput = form.querySelector('[name="discount_total_value"]');
+            const submitRequiredFieldNames = [
+                'full_name',
+                'document_number',
+                'phone_primary',
+                'email',
+                'residential_address',
+                'city',
+                'company_id',
+                'commercial_user_id',
+            ];
             const ctx = canvas.getContext('2d');
             let drawing = false;
             let autosaveTimer;
@@ -590,6 +600,15 @@
 
             form.addEventListener('submit', (event) => {
                 const submitAction = event.submitter?.value;
+                const isSubmitAction = submitAction === 'submit';
+
+                submitRequiredFieldNames.forEach((fieldName) => {
+                    const field = form.querySelector(`[name="${fieldName}"]`);
+                    if (field) {
+                        field.required = isSubmitAction;
+                    }
+                });
+
                 if (submitAction === 'submit' && termsAcceptedInput?.value !== '1') {
                     event.preventDefault();
                     termsAcceptCheckbox.checked = false;
