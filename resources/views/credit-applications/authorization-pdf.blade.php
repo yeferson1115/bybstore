@@ -1,191 +1,315 @@
 <!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <style>
-        @page { margin: 14px; }
-        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #111; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        td, th { border: 1px solid #1f1f1f; padding: 3px 4px; vertical-align: middle; word-wrap: break-word; }
-        .header-main { background: #7a1f7b; color: #fff; font-weight: 700; text-transform: uppercase; font-size: 16px; }
-        .header-section { background: #8f2a90; color: #fff; font-weight: 700; text-transform: uppercase; text-align: center; font-size: 12px; }
-        .header-gray { background: #b5b5b5; font-weight: 700; text-transform: uppercase; text-align: center; }
-        .label { background: #bdbdbd; font-weight: 700; text-transform: uppercase; }
-        .small-label { background: #c7c7c7; font-weight: 700; text-transform: uppercase; font-size: 10px; }
-        .center { text-align: center; }
-        .text-justify { text-align: justify; }
-        .id-image { width: 100%; max-height: 260px; object-fit: contain; }
-        .h44 { height: 44px; }
-        .h64 { height: 64px; }
-        .h80 { height: 80px; }
-        .signature-box img { max-height: 84px; max-width: 100%; }
-        .block-space { margin-top: 3px; }
-    </style>
+<meta charset="UTF-8">
+
+<style>
+@page { margin: 12px; }
+
+body {
+    font-family: DejaVu Sans, sans-serif;
+    font-size: 9px;
+    color:#000;
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+}
+
+td {
+    border:1px solid #000;
+    padding:3px;
+    vertical-align:middle;
+}
+
+.header {
+    background:#7a1f7b;
+    color:#fff;
+    font-weight:bold;
+    text-align:center;
+    font-size:14px;
+}
+
+.subheader {
+    background:#bfbfbf;
+    font-weight:bold;
+    text-align:center;
+}
+
+.label {
+    font-weight:bold;
+}
+
+.center { text-align:center; }
+.right { text-align:right; }
+.small { font-size:8px; }
+.text { text-align:justify; }
+
+.signature img {
+    max-height:70px;
+}
+
+.id-img {
+    width:100%;
+    max-height:180px;
+    object-fit:contain;
+}
+</style>
 </head>
+
 <body>
-    @php
-        $commercialName = trim(($application->commercialUser->name ?? '') . ' ' . ($application->commercialUser->last_name ?? ''));
-        $commercialContact = $application->commercialUser->contact ?? $application->commercialUser->phone ?? '';
-        $commercialSignaturePath = $application->commercialUser->signature_path ?? null;
-    @endphp
-    <table>
-        <tr class="header-main h44">
-            <td style="width: 60%;" class="center">SOLICITUD DE CREDITO</td>
-            <td style="width: 40%;" class="right">NETSECURITYBERBOU<br>NIT: 21388364-8</td>
-        </tr>
-    </table>
 
-    <table class="block-space">
-        <tr><td class="header-gray" colspan="8">AUTORIZACION DE DESCUENTO</td></tr>
-        <tr>
-            <td class="label" colspan="2">EMPLEADOR:</td>
-            <td colspan="4">{{ $application->employer_name }}</td>
-            <td class="label">FECHA</td>
-            <td>{{ optional($application->discount_authorization_date)->format('Y-m-d') }}</td>
-        </tr>
-        <tr>
-            <td class="label" colspan="2">NIT:</td>
-            <td colspan="6">{{ $application->employer_nit }}</td>
-        </tr>
-        <tr>
-            <td class="label" colspan="2">NOMBRE DEL EMPLEADO:</td>
-            <td colspan="3">{{ $application->employee_name }}</td>
-            <td class="label">DOCUMENTO:</td>
-            <td colspan="2">{{ $application->employee_document }}</td>
-        </tr>
-        <tr>
-            <td class="label" colspan="2">CARGO:</td>
-            <td colspan="6">{{ $application->employee_position }}</td>
-        </tr>
-        <tr>
-            <td class="label" colspan="2">DESCUENTO POR:</td>
-            <td colspan="6">{{ $application->discount_concept }}</td>
-        </tr>
-        <tr>
-            <td class="label" colspan="2">VALOR TOTAL:</td>
-            <td colspan="6">${{ number_format((float) $application->discount_total_value, 0, ',', '.') }}</td>
-        </tr>
-        <tr>
-            <td colspan="8" class="text-justify h64">
-                Mediante la firma del presente documento, manifiesto de manera expresa y voluntaria mi autorización para que la empresa realice el descuento correspondiente en la nómina que me corresponde, derivado del crédito registrado.
-            </td>
-        </tr>
-        <tr>
-            <td class="header-gray" colspan="4">VALOR CUOTA QUINCENAL</td>
-            <td class="header-gray" colspan="4">NRO. DE CUOTAS</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="center">${{ number_format((float) $application->installment_value, 0, ',', '.') }}</td>
-            <td colspan="4" class="center">{{ $application->installments_count }}</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="center">FIRMA DEL EMPLEADO</td>
-            <td colspan="4" class="center">ASESOR COMERCIAL</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="signature-box center h80">
-                @if ($application->signature_path)
-                    <img src="{{ public_path($application->signature_path) }}" alt="Firma empleado">
-                @endif
-            </td>
-            <td colspan="4" class="signature-box center h80">
-                @if ($commercialSignaturePath)
-                    <img src="{{ public_path($commercialSignaturePath) }}" alt="Firma asesor comercial">
-                @endif
-            </td>
-        </tr>
-        <tr>
-            <td colspan="4" class="center">{{ $application->full_name }}</td>
-            <td colspan="4" class="center">{{ $commercialName }}</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="center">CONTACTO CLIENTE: {{ $application->phone_primary }}</td>
-            <td colspan="4" class="center">CONTACTO ASESOR: {{ $commercialContact }}</td>
-        </tr>
-    </table>
+@php
+$commercialName = trim(($application->commercialUser->name ?? '') . ' ' . ($application->commercialUser->last_name ?? ''));
+$commercialContact = $application->commercialUser->contact ?? $application->commercialUser->phone ?? '';
+$commercialSignaturePath = $application->commercialUser->signature_path ?? null;
+@endphp
 
-    <table class="block-space">
-        <tr><td class="header-section" colspan="2">DOCUMENTO DE IDENTIDAD</td></tr>
-        <tr>
-            <td style="width: 50%;" class="center">
-                <strong>CÉDULA FRENTE</strong><br>
-                @if ($application->id_front_path)
-                    <img class="id-image" src="{{ public_path($application->id_front_path) }}" alt="Cédula frente">
-                @endif
-            </td>
-            <td style="width: 50%;" class="center">
-                <strong>CÉDULA REVERSO</strong><br>
-                @if ($application->id_back_path)
-                    <img class="id-image" src="{{ public_path($application->id_back_path) }}" alt="Cédula reverso">
-                @endif
-            </td>
-        </tr>
-    </table>
+<!-- HEADER -->
+<table>
+<tr>
+<td colspan="6" class="header">SOLICITUD DE CREDITO</td>
+<td colspan="2" class="center header">
+B&B STORE S.A.S.<br>
+NIT: 902034686-0
+</td>
+</tr>
 
-    <table class="block-space">
-        <tr><td class="header-section" colspan="8">CONSTANCIA DE ENTREGA</td></tr>
-        <tr>
-            <td class="label" colspan="2">NOMBRES Y APELLIDOS</td>
-            <td colspan="6">{{ $application->full_name }}</td>
-        </tr>
-        <tr>
-            <td class="label" colspan="2">DOCUMENTO DE IDENTIDAD</td>
-            <td class="small-label">TIPO</td>
-            <td>{{ $application->document_type }}</td>
-            <td class="small-label">NUMERO</td>
-            <td colspan="3">{{ $application->document_number }}</td>
-        </tr>
-        <tr>
-            <td class="label" colspan="2">DIRECCION DE ENTREGA</td>
-            <td colspan="6">{{ $application->residential_address }}</td>
-        </tr>
-        <tr>
-            <td class="label" colspan="2">BARRIO</td>
-            <td colspan="3">{{ $application->neighborhood }}</td>
-            <td class="small-label">CIUDAD</td>
-            <td colspan="2">{{ $application->city }}</td>
-        </tr>
-        <tr>
-            <td class="header-gray" colspan="8">ARTICULOS ENTREGADOS</td>
-        </tr>
-        <tr>
-            <td colspan="8" class="h44">{{ $application->requested_products }}</td>
-        </tr>
-        <tr>
-            <td colspan="8" class="text-justify h64 center"><strong>
-                CONFIRMO QUE RECIBÍ A SATISFACCIÓN LOS PRODUCTOS ARRIBA DESCRITOS, FUERON TESTEADOS Y ESTÁN EN BUEN FUNCIONAMIENTO Y EXCELENTES CONDICIONES ESTÉTICAS, ME INFORMARON SOBRE EL PERÍODO Y CONDICIONES DE GARANTÍA Y CANALES DE ATENCIÓN DE B&B STORE S.A.S.
-            </strong></td>
-        </tr>
-        <tr>
-            <td class="label center" colspan="2">OBSERVACIONES DEL CLIENTE</td>
-            <td colspan="6" class="h44">{{ $application->observations }}</td>
-        </tr>
-        <tr>
-            <td class="label center" colspan="4">RECIBI A SATISFACCION</td>
-            <td colspan="4" rowspan="2"></td>
-        </tr>
-        <tr>
-            <td colspan="4" class="signature-box center h80">
-                @if ($application->signature_path)
-                    <img src="{{ public_path($application->signature_path) }}" alt="Firma recibido">
-                @endif
-            </td>
-        </tr>
-        <tr>
-            <td class="label center" colspan="4">FIRMA</td>
-            <td class="label center" colspan="4">ENTREGADO POR</td>
-        </tr>
-        <tr>
-            <td colspan="4">{{ $application->full_name }}</td>
-            <td colspan="4" class="center">{{ $commercialName }}</td>
-        </tr>
-        <tr>
-            <td class="label" colspan="2">DOCUMENTO DE IDENTIDAD</td>
-            <td class="small-label">TIPO</td>
-            <td>{{ $application->document_type }}</td>
-            <td class="small-label">NUMERO</td>
-            <td colspan="3">{{ $application->document_number }}</td>
-        </tr>
-    </table>
+<!-- DATOS PERSONALES -->
+<tr><td colspan="8" class="subheader">DATOS PERSONALES</td></tr>
+
+<tr>
+<td class="label">NOMBRES Y APELLIDOS</td>
+<td colspan="7">{{ $application->full_name }}</td>
+</tr>
+
+<tr>
+<td class="label">DOCUMENTO</td>
+<td colspan="3">{{ $application->document_type }} {{ $application->document_number }}</td>
+<td class="label">FECHA EXPEDICION</td>
+<td colspan="3">{{ optional($application->expedition_date)->format('d/m/Y') }}</td>
+</tr>
+
+<tr>
+<td class="label">CELULAR</td>
+<td colspan="3">{{ $application->phone_primary }}</td>
+<td class="label">CORREO</td>
+<td colspan="3">{{ $application->email }}</td>
+</tr>
+
+<tr>
+<td class="label">DIRECCION</td>
+<td colspan="3">{{ $application->residential_address }}</td>
+<td class="label">BARRIO</td>
+<td colspan="3">{{ $application->neighborhood }}</td>
+</tr>
+
+<tr>
+<td class="label">CIUDAD</td>
+<td colspan="3">{{ $application->city }}</td>
+<td class="label">FECHA SOLICITUD</td>
+<td colspan="3">{{ optional($application->created_at)->format('d/m/Y') }}</td>
+</tr>
+
+<!-- DATOS LABORALES -->
+<tr><td colspan="8" class="subheader">DATOS LABORALES</td></tr>
+
+<tr>
+<td class="label">EMPRESA</td>
+<td colspan="3">{{ $application->employer_name }}</td>
+<td class="label">NIT</td>
+<td colspan="3">{{ $application->employer_nit }}</td>
+</tr>
+
+<tr>
+<td class="label">CARGO</td>
+<td colspan="3">{{ $application->employee_position }}</td>
+<td class="label">TIPO CONTRATO</td>
+<td colspan="3">{{ $application->contract_type }}</td>
+</tr>
+
+<tr>
+<td class="label">INGRESOS</td>
+<td colspan="3">${{ number_format($application->monthly_income,0,',','.') }}</td>
+<td class="label">FECHA INGRESO</td>
+<td colspan="3">{{ optional($application->hire_date)->format('d/m/Y') }}</td>
+</tr>
+
+<!-- DATOS CREDITO -->
+<tr><td colspan="8" class="subheader">DATOS DEL CREDITO</td></tr>
+
+<tr>
+<td class="label">PRODUCTO</td>
+<td colspan="7">{{ $application->requested_products }}</td>
+</tr>
+
+<tr>
+<td class="label">VALOR</td>
+<td>${{ number_format($application->discount_total_value,0,',','.') }}</td>
+
+<td class="label">CUOTA</td>
+<td>${{ number_format($application->installment_value,0,',','.') }}</td>
+
+<td class="label">CUOTAS</td>
+<td>{{ $application->installments_count }}</td>
+
+<td class="label">1RA CUOTA</td>
+<td>{{ optional($application->first_payment_date)->format('d/m/Y') }}</td>
+</tr>
+
+<tr>
+<td colspan="8" class="center">
+DECADAL &nbsp;&nbsp; QUINCENAL &nbsp;&nbsp; MENSUAL
+</td>
+</tr>
+
+<!-- TEXTO LEGAL -->
+<tr>
+<td colspan="8" class="text small">
+Autorizo a B&B STORE S.A.S para la toma y verificación de los datos suministrados con el fin de realizar los cobros pertinentes, en caso de incumplir con las cuotas o pagos pactados, se procederá con el cobro jurídico conforme a la ley.
+
+<br><br>
+
+Los datos personales aquí recolectados serán tratados conforme a la Ley 1581 de 2012, Decreto 1377 de 2013 y demás normas aplicables. El titular tiene derecho a conocer, actualizar y rectificar sus datos personales, solicitar prueba de la autorización otorgada y revocar la misma.
+</td>
+</tr>
+
+<!-- AUTORIZACION -->
+<tr><td colspan="8" class="subheader">AUTORIZACION DE DESCUENTO</td></tr>
+
+<tr>
+<td class="label">EMPLEADOR</td>
+<td colspan="3">{{ $application->employer_name }}</td>
+<td class="label">FECHA</td>
+<td colspan="3">{{ optional($application->discount_authorization_date)->format('d/m/Y') }}</td>
+</tr>
+
+<tr>
+<td class="label">NIT</td>
+<td colspan="7">{{ $application->employer_nit }}</td>
+</tr>
+
+<tr>
+<td class="label">EMPLEADO</td>
+<td colspan="3">{{ $application->full_name }}</td>
+<td class="label">DOCUMENTO</td>
+<td colspan="3">{{ $application->document_number }}</td>
+</tr>
+
+<tr>
+<td class="label">DESCUENTO POR</td>
+<td colspan="7">{{ $application->discount_concept }}</td>
+</tr>
+
+<tr>
+<td class="label">VALOR TOTAL</td>
+<td colspan="7">${{ number_format($application->discount_total_value,0,',','.') }}</td>
+</tr>
+
+<tr>
+<td colspan="8" class="text small">
+Autorizo a mi empleador para que descuente de mi salario el valor correspondiente al crédito adquirido con B&B STORE S.A.S., conforme a la normativa laboral vigente.
+</td>
+</tr>
+
+<tr>
+<td colspan="4" class="center">FIRMA EMPLEADO</td>
+<td colspan="4" class="center">ASESOR</td>
+</tr>
+
+<tr>
+<td colspan="4" class="signature center">
+@if($application->signature_path)
+<img src="{{ public_path($application->signature_path) }}">
+@endif
+</td>
+
+<td colspan="4" class="signature center">
+@if($commercialSignaturePath)
+<img src="{{ public_path($commercialSignaturePath) }}">
+@endif
+</td>
+</tr>
+
+<tr>
+<td colspan="4" class="center">{{ $application->full_name }}</td>
+<td colspan="4" class="center">{{ $commercialName }}</td>
+</tr>
+
+<tr>
+<td colspan="4" class="center">CONTACTO: {{ $application->phone_primary }}</td>
+<td colspan="4" class="center">CONTACTO: {{ $commercialContact }}</td>
+</tr>
+
+<!-- DOCUMENTO -->
+<tr><td colspan="8" class="subheader">DOCUMENTO DE IDENTIDAD</td></tr>
+
+<tr>
+<td colspan="4" class="center">
+@if($application->id_front_path)
+<img class="id-img" src="{{ public_path($application->id_front_path) }}">
+@endif
+</td>
+
+<td colspan="4" class="center">
+@if($application->id_back_path)
+<img class="id-img" src="{{ public_path($application->id_back_path) }}">
+@endif
+</td>
+</tr>
+
+<!-- ENTREGA -->
+<tr><td colspan="8" class="subheader">CONSTANCIA DE ENTREGA</td></tr>
+
+<tr>
+<td class="label">NOMBRE</td>
+<td colspan="7">{{ $application->full_name }}</td>
+</tr>
+
+<tr>
+<td class="label">DIRECCION</td>
+<td colspan="7">{{ $application->residential_address }}</td>
+</tr>
+
+<tr>
+<td class="label">CIUDAD</td>
+<td colspan="3">{{ $application->city }}</td>
+<td class="label">BARRIO</td>
+<td colspan="3">{{ $application->neighborhood }}</td>
+</tr>
+
+<tr>
+<td colspan="8" class="subheader">ARTICULOS ENTREGADOS</td>
+</tr>
+
+<tr>
+<td colspan="8">{{ $application->requested_products }}</td>
+</tr>
+
+<tr>
+<td colspan="8" class="center text">
+CONFIRMO QUE RECIBÍ A SATISFACCIÓN LOS PRODUCTOS EN BUEN ESTADO Y FUNCIONAMIENTO.
+</td>
+</tr>
+
+<tr>
+<td colspan="4" class="center">FIRMA</td>
+<td colspan="4" class="center">ENTREGADO POR</td>
+</tr>
+
+<tr>
+<td colspan="4" class="signature center">
+@if($application->signature_path)
+<img src="{{ public_path($application->signature_path) }}">
+@endif
+</td>
+
+<td colspan="4" class="center">{{ $commercialName }}</td>
+</tr>
+
+</table>
+
 </body>
 </html>

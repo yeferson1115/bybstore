@@ -35,7 +35,7 @@
     <table>
         <tr class="header-main h44">
             <td style="width: 60%;" class="center">SOLICITUD DE CREDITO</td>
-            <td style="width: 40%;" class="right">NETSECURITYBERBOU<br>NIT: 21388364-8</td>
+            <td style="width: 40%;" class="right">B&B STORE S.A.S.<br>NIT: 902034686-0</td>
         </tr>
         <tr>
             <td class="label">FECHA DE SOLICITUD</td>

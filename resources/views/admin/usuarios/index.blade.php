@@ -77,7 +77,8 @@
 
                                         <td>
                                             @if($user->hasRole('admin')) <b>Administrador</b> @endif
-                                            @if($user->hasRole('Mesero')) <b>Mesero</b> @endif                                            
+                                            @if($user->hasRole('agente')) <b>Agente</b> @endif   
+                                            @if($user->hasRole('Comercial')) <b>Comercial</b> @endif                                            
                                            
                                         </td>
                                         <td>{{ $user->email  }}</td>
