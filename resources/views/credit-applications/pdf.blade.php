@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        @page { margin: 14px; }
-        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #111; }
+        @page { size: legal portrait; margin: 7px; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 8px; line-height: 1.05; color: #111; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        td, th { border: 1px solid #1f1f1f; padding: 2px 4px; vertical-align: middle; word-wrap: break-word; }
+        td, th { border: 1px solid #1f1f1f; padding: 1px 2px; vertical-align: middle; word-wrap: break-word; }
 
-        .header-main { background: #7a1f7b; color: #fff; font-weight: 700; text-transform: uppercase; font-size: 16px; }
-        .header-section { background: #8f2a90; color: #fff; font-weight: 700; text-transform: uppercase; text-align: center; font-size: 12px; }
+        .header-main { background: #7a1f7b; color: #fff; font-weight: 700; text-transform: uppercase; font-size: 11px; }
+        .header-section { background: #8f2a90; color: #fff; font-weight: 700; text-transform: uppercase; text-align: center; font-size: 9px; }
         .header-gray { background: #b5b5b5; font-weight: 700; text-transform: uppercase; text-align: center; }
         .label { background: #bdbdbd; font-weight: 700; text-transform: uppercase; }
-        .small-label { background: #c7c7c7; font-weight: 700; text-transform: uppercase; font-size: 10px; }
+        .small-label { background: #c7c7c7; font-weight: 700; text-transform: uppercase; font-size: 8px; }
         .center { text-align: center; }
         .right { text-align: right; }
-        .h24 { height: 24px; }
-        .h34 { height: 34px; }
-        .h44 { height: 44px; }
-        .h58 { height: 58px; }
-        .h72 { height: 72px; }
-        .h88 { height: 88px; }
-        .signature-box img { max-height: 84px; max-width: 100%; }
-        .block-space { margin-top: 2px; }
+        .h24 { height: 16px; }
+        .h34 { height: 20px; }
+        .h44 { height: 24px; }
+        .h58 { height: 36px; }
+        .h72 { height: 44px; }
+        .h88 { height: 52px; }
+        .signature-box img { max-height: 48px; max-width: 100%; }
+        .block-space { margin-top: 1px; }
         .text-justify { text-align: justify; }
     </style>
 </head>
@@ -137,12 +137,12 @@
 
     <table class="block-space">
         <tr>
-            <td class="center text-justify" style="font-size: 10px;">
+            <td class="center text-justify" style="font-size: 7px;">
                 <strong>Autorizo a Netsecurityberbou para la toma y verificacion de los datos suministrados con el fin de realizar los cobros pertinentes, en caso de incumplir con las cuotas o pagos pactados, se procedera con el cobro juridico como se estipula en la ley del articulo 11 del Decreto 2677 de 2012.</strong>
             </td>
         </tr>
         <tr>
-            <td class="text-justify" style="font-size: 9px;">
+            <td class="text-justify" style="font-size: 6.5px;">
                 Los datos personales aqui recolectados seran recolectados, almacenados, procesados, usados, compilados, transmitidos, transferidos, actualizados y dispuestos conforme lo establece la Ley 1581 de 2012 y su decreto reglamentario.
             </td>
         </tr>
