@@ -43,6 +43,11 @@ return [
 
 
 
+
+    'admin_notifications' => [
+        'emails' => array_filter(array_map('trim', explode(',', (string) env('ADMIN_NOTIFICATION_EMAILS', '')))),
+    ],
+
     'wompi' => [
         'public_key' => env('WOMPI_PUBLIC_KEY'),
         'private_key' => env('WOMPI_PRIVATE_KEY'),

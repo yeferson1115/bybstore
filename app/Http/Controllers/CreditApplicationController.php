@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -287,6 +288,7 @@ class CreditApplicationController extends Controller
             $application->pdf_path = $pdfPath;
             $application->authorization_pdf_path = $authorizationPdfPath;
             $application->save();
+            $this->sendAdminCreditApplicationEmail($application);
 
             return redirect()
                 ->route('credit-applications.create', ['token' => $application->public_token])
@@ -625,4 +627,18 @@ class CreditApplicationController extends Controller
 
         return $data;
     }
+
+    protected function sendAdminCreditApplicationEmail(CreditApplication $application): void
+    {
+        $recipients = collect(config('services.admin_notifications.emails', []))
+            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->values();
+
+        if ($recipients->isEmpty()) {
+            return;
+        }
+
+        Mail::to($recipients->all())->send(new \App\Mail\CreditApplicationSubmittedAdminMail($application));
+    }
+
 }

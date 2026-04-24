@@ -39,6 +39,36 @@
 
     </div>
 
+    <div class="row g-4 mt-2">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <h5 class="mb-3">Notificaciones: Solicitudes de crédito</h5>
+                @forelse($recentCreditApplications as $application)
+                    <div class="border rounded p-2 mb-2">
+                        <strong>#{{ $application->id }}</strong> - {{ $application->full_name }}<br>
+                        <small class="text-muted">Doc: {{ $application->document_number }} · {{ optional($application->submitted_at)->format('d/m/Y H:i') }}</small>
+                    </div>
+                @empty
+                    <p class="text-muted mb-0">Sin solicitudes recientes.</p>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <h5 class="mb-3">Notificaciones: Pagos aprobados</h5>
+                @forelse($recentApprovedPayments as $payment)
+                    <div class="border rounded p-2 mb-2">
+                        <strong>{{ $payment->reference }}</strong> - Crédito #{{ $payment->credit_application_id }}<br>
+                        <small class="text-muted">${{ number_format((float) $payment->amount, 0, ',', '.') }} · {{ optional($payment->paid_at)->format('d/m/Y H:i') }}</small>
+                    </div>
+                @empty
+                    <p class="text-muted mb-0">Sin pagos aprobados recientes.</p>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <style>
