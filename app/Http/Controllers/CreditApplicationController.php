@@ -305,20 +305,23 @@ class CreditApplicationController extends Controller
         $netValue = (float) ($data['net_value_without_interest'] ?? 0);
         $installments = (int) ($data['installments_count'] ?? 0);
         $frequency = $data['payment_frequency'] ?? null;
-        $monthlyInstallment = 0.0;
+        $installmentValue = 0.0;
 
         if ($netValue > 0 && $installments > 0) {
-            $futureValue = $netValue * ((1 + 0.022) ** $installments);
+            $monthsPerInstallment = match ($frequency) {
+                'biweekly' => 0.5,
+                'decadal' => 1 / 3,
+                default => 1,
+            };
+
+            $totalMonths = $installments * $monthsPerInstallment;
+            $futureValue = $netValue * ((1 + 0.022) ** $totalMonths);
             $data['discount_total_value'] = round($futureValue, 2);
 
-            $monthlyInstallment = $futureValue / $installments;
+            $installmentValue = $futureValue / $installments;
         }
 
-        $data['installment_value'] = match ($frequency) {
-            'biweekly' => round($monthlyInstallment / 2, 2),
-            'decadal' => round($monthlyInstallment / 3, 2),
-            default => round($monthlyInstallment, 2),
-        };
+        $data['installment_value'] = round($installmentValue, 2);
 
         if (! empty($data['requested_products'])) {
             $data['discount_concept'] = $data['requested_products'];

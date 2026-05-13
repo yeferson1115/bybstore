@@ -387,13 +387,12 @@
                     return;
                 }
 
-                const vf = vp * Math.pow(1 + i, n);
-                const mensual = vf / n;
                 const frequency = paymentFrequencyInput?.value;
+                const monthsPerInstallment = frequency === 'biweekly' ? 0.5 : (frequency === 'decadal' ? (1 / 3) : 1);
+                const totalMonths = n * monthsPerInstallment;
 
-                let cuota = mensual;
-                if (frequency === 'biweekly') cuota = mensual / 2;
-                if (frequency === 'decadal') cuota = mensual / 3;
+                const vf = vp * Math.pow(1 + i, totalMonths);
+                const cuota = vf / n;
 
                 if (totalValueInput) totalValueInput.value = vf.toFixed(2);
                 if (installmentValueInput) installmentValueInput.value = cuota.toFixed(2);
