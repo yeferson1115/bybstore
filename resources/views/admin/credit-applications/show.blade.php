@@ -44,6 +44,10 @@
                         <button class="btn btn-primary" type="submit">Actualizar estado</button>
                     </div>
                 </form>
+                <form method="POST" action="{{ route('admin.credit-applications.regenerate-pdfs', $application) }}" class="mt-3">
+                    @csrf
+                    <button class="btn btn-outline-secondary" type="submit">Regenerar PDFs</button>
+                </form>
             </div>
         </div>
 
