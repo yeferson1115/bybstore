@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CreditApplication;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -61,13 +62,12 @@ class AdminCreditApplicationController extends Controller
         $creditApplication->status = $data['status'];
         $creditApplication->save();
 
-        if ($previousStatus !== $creditApplication->status && in_array($creditApplication->status, ['approved', 'rejected'], true)) {
+        if ($previousStatus !== $creditApplication->status) {
             $phone = $this->normalizePhone((string) $creditApplication->phone_primary);
 
             if (preg_match('/^57\d{10}$/', $phone)) {
-                $statusMessage = $creditApplication->status === 'approved'
-                    ? 'Tu solicitud de crédito fue aprobada.'
-                    : 'Tu solicitud de crédito fue rechazada.';
+                $statusLabel = $this->statuses()[$creditApplication->status] ?? $creditApplication->status;
+                $statusMessage = "Tu solicitud de crédito ahora está en estado: {$statusLabel}.";
 
                 $this->sendSms($phone, $statusMessage);
             }
@@ -76,6 +76,21 @@ class AdminCreditApplicationController extends Controller
         return redirect()
             ->route('admin.credit-applications.show', $creditApplication)
             ->with('success', 'Estado actualizado correctamente.');
+    }
+
+    public function regeneratePdfs(CreditApplication $creditApplication): RedirectResponse
+    {
+        $basePath = "credit-applications/{$creditApplication->public_token}";
+        $pdfPath = $this->generatePdf($creditApplication, $basePath);
+        $authorizationPdfPath = $this->generateAuthorizationPdf($creditApplication, $basePath);
+
+        $creditApplication->pdf_path = $pdfPath;
+        $creditApplication->authorization_pdf_path = $authorizationPdfPath;
+        $creditApplication->save();
+
+        return redirect()
+            ->route('admin.credit-applications.show', $creditApplication)
+            ->with('success', 'PDFs regenerados correctamente.');
     }
 
     private function statuses(): array
@@ -135,5 +150,40 @@ class AdminCreditApplicationController extends Controller
             ]);
 
         return $response->successful();
+    }
+
+    private function generatePdf(CreditApplication $application, string $basePath): string
+    {
+        $pdf = Pdf::loadView('credit-applications.pdf', [
+            'application' => $application,
+        ])->setPaper('a4');
+
+        $path = $basePath . '/solicitud.pdf';
+        $fullPath = public_path($path);
+        $this->ensurePublicDirectoryExists(dirname($fullPath));
+        file_put_contents($fullPath, $pdf->output());
+
+        return $path;
+    }
+
+    private function generateAuthorizationPdf(CreditApplication $application, string $basePath): string
+    {
+        $pdf = Pdf::loadView('credit-applications.authorization-pdf', [
+            'application' => $application,
+        ])->setPaper('a4');
+
+        $path = $basePath . '/autorizacion-descuento.pdf';
+        $fullPath = public_path($path);
+        $this->ensurePublicDirectoryExists(dirname($fullPath));
+        file_put_contents($fullPath, $pdf->output());
+
+        return $path;
+    }
+
+    private function ensurePublicDirectoryExists(string $directoryPath): void
+    {
+        if (! is_dir($directoryPath)) {
+            mkdir($directoryPath, 0755, true);
+        }
     }
 }
