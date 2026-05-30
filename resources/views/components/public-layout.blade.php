@@ -114,11 +114,53 @@
         .social-link:hover {
             transform: translateY(-2px);
         }
+
+        @media (max-width: 767.98px) {
+            .site-header .container {
+                padding-top: .85rem !important;
+                padding-bottom: .85rem !important;
+                gap: .85rem;
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+
+            .site-header .container > div {
+                justify-content: center;
+            }
+
+            .logo-wrap {
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+            }
+
+            .site-header h1 {
+                font-size: 1.12rem;
+            }
+
+            .site-header small {
+                font-size: .8rem;
+            }
+
+            .site-header .btn-brand {
+                width: 100%;
+                text-align: center;
+            }
+
+            footer .row > div {
+                text-align: center;
+            }
+
+            footer .social-link {
+                width: 36px;
+                height: 36px;
+            }
+        }
     </style>
 </head>
 <body>
     <header class="site-header sticky-top">
-        <div class="container py-3 d-flex align-items-center justify-content-between">
+        <div class="container py-3 d-flex align-items-center justify-content-between public-header-inner">
             <div class="d-flex align-items-center gap-3">
                 <a href="{{ route('home') }}" class="logo-wrap" aria-label="Ir a la página principal">
                     <img src="{{ asset('imagenes/logo.jpg') }}" alt="Logo B&B Store" class="img-fluid rounded-3">
@@ -150,7 +192,7 @@
                 </div>
                 <div class="col-md-4">
                     <h4 class="h6 fw-bold text-uppercase mb-3">Síguenos</h4>
-                    <div class="d-flex gap-2 mb-2">
+                    <div class="d-flex gap-2 mb-2 justify-content-center justify-content-md-start">
                         <a href="#" class="social-link" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
                         <a href="#" class="social-link" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
                         <a href="#" class="social-link" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
